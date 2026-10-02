@@ -1,0 +1,412 @@
+/* ============================================
+   LOGIN.CSS — E-Library MTs Al-Falah Klender
+   Nocturne Scholastic Design System v1.0
+   ============================================ */
+
+/* --- Top Bar --- */
+.top-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-default);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  z-index: 100;
+}
+
+.top-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-sekolah {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border-default);
+}
+
+.top-bar-title {
+  display: flex;
+  flex-direction: column;
+}
+
+.top-bar-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.top-bar-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.top-bar-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  border-radius: 9999px;
+  padding: 4px 12px;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+  animation: pulse-dot 2s infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.status-text {
+  font-size: 11px;
+  font-weight: 600;
+  color: #22c55e;
+  letter-spacing: 0.05em;
+}
+
+/* --- Main Layout --- */
+.login-main {
+  height: 100vh;
+  height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Menyediakan ruang untuk header 60px dan footer. */
+  padding: 76px 20px 68px;
+}
+
+/* --- Login Card --- */
+.login-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 16px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+  width: 100%;
+  max-width: 360px;
+  padding: 34px 24px 30px;
+}
+
+/* --- Login Header --- */
+.login-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.login-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 2px solid var(--border-default);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 6px;
+  overflow: hidden;
+}
+
+.login-logo {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.login-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+
+.login-subtitle {
+  font-size: 11px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* --- Tab Group --- */
+.tab-group {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  padding: 4px;
+}
+
+.tab-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 30px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab-btn .material-symbols-outlined {
+  font-size: 16px;
+}
+
+.tab-btn:hover {
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.tab-btn.active {
+  background: var(--bg-input);
+  color: var(--primary);
+  border: 1px solid var(--border-default);
+}
+
+/* --- Form --- */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 12px;
+  font-size: 15px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.login-form .form-input {
+  padding-left: 34px;
+  padding-right: 38px;
+  font-size: 12px;
+}
+
+.login-form .form-input::placeholder {
+  font-size: 11px;
+}
+
+/* Sembunyikan kontrol tampilkan password bawaan browser (mis. Microsoft Edge). */
+.login-form input[type="password"]::-ms-reveal,
+.login-form input[type="password"]::-ms-clear {
+  display: none;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.toggle-password:hover {
+  color: var(--text-secondary);
+}
+
+.toggle-password .material-symbols-outlined {
+  font-size: 18px;
+}
+
+/* --- Error Message --- */
+.error-msg {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--error);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* --- Tombol Login --- */
+.btn-login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 36px;
+  background: var(--primary);
+  color: #12181f;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  margin-top: 4px;
+}
+
+.btn-login:hover {
+  background: var(--primary-hover);
+}
+
+.btn-login:active {
+  transform: scale(0.99);
+}
+
+.btn-login:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-login .material-symbols-outlined {
+  font-size: 18px;
+}
+
+/* --- Info Bawah --- */
+.login-info {
+  text-align: center;
+  font-size: 10px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.link-wa {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.link-wa:hover {
+  text-decoration: underline;
+  color: var(--primary-hover);
+}
+
+/* --- Footer --- */
+.login-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-default);
+  padding: 6px 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+/* Layar pendek: padatkan elemen agar kartu tetap tampak utuh. */
+@media (max-height: 700px) {
+  .login-main {
+    padding-top: 64px;
+    padding-bottom: 58px;
+  }
+  .login-card {
+    padding-top: 24px;
+    padding-bottom: 22px;
+  }
+  .login-header {
+    margin-bottom: 10px;
+  }
+  .login-icon-wrap {
+    width: 44px;
+    height: 44px;
+    margin-bottom: 5px;
+  }
+  .login-logo {
+    width: 36px;
+    height: 36px;
+  }
+  .tab-group {
+    margin-bottom: 10px;
+  }
+  .login-form {
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .form-input {
+    height: 40px;
+  }
+  .btn-login {
+    height: 40px;
+  }
+  .login-info {
+    font-size: 10px;
+    line-height: 1.5;
+  }
+}
+
+.login-footer p {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* --- Responsive --- */
+@media (max-width: 480px) {
+  .login-card {
+    max-width: 340px;
+    padding: 28px 18px 24px;
+  }
+  .top-bar {
+    padding: 0 16px;
+  }
+  .top-bar-sub {
+    display: none;
+  }
+  .login-footer {
+    padding: 8px 16px;
+  }
+}
