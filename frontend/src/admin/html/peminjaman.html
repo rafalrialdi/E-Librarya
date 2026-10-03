@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Peminjaman - E-Library MTs Al-Falah Klender</title>
+  <link rel="stylesheet" href="../css/admin.css">
+  <style>
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-default);
+    }
+    .section-indicator {
+      width: 4px;
+      height: 20px;
+      border-radius: 4px;
+    }
+    .indicator-yellow { background-color: var(--status-pending); }
+    .indicator-green { background-color: var(--tertiary); }
+    .indicator-blue { background-color: var(--secondary); }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+      margin-bottom: 36px;
+    }
+
+    .loan-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-default);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: border-color 0.15s ease;
+    }
+
+    .loan-card:hover {
+      border-color: var(--primary);
+    }
+
+    .loan-top {
+      display: flex;
+      gap: 12px;
+    }
+
+    .loan-cover {
+      width: 50px;
+      height: 70px;
+      border-radius: 6px;
+      object-fit: cover;
+      background: var(--bg-input);
+      border: 1px solid var(--border-default);
+      flex-shrink: 0;
+    }
+
+    .loan-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .loan-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .loan-borrower {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .loan-dates {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      background-color: var(--bg-main);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+    }
+
+    .loan-date-item label {
+      color: var(--text-muted);
+      display: block;
+    }
+
+    .loan-date-item span {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .loan-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside id="sidebar"></aside>
+
+    <!-- Main Canvas -->
+    <div class="main-wrapper">
+      <header id="top-header"></header>
+
+      <main class="page-content">
+        <!-- Seksi 1: Request Peminjaman (Menunggu) -->
+        <div class="section-header">
+          <span class="section-indicator indicator-yellow"></span>
+          <h3 style="font-size: 16px; font-weight: 700; color: var(--text-primary);">
+            Permintaan Peminjaman (Menunggu Persetujuan)
+          </h3>
+          <span id="badge-count-request" class="badge badge-pending">0 Request</span>
+        </div>
+        <div id="grid-request" class="cards-grid">
+          <p style="color: var(--text-muted); padding: 16px;">Memuat permintaan peminjaman...</p>
+        </div>
+
+        <!-- Seksi 2: Peminjaman Aktif (Disetujui) -->
+        <div class="section-header">
+          <span class="section-indicator indicator-green"></span>
+          <h3 style="font-size: 16px; font-weight: 700; color: var(--text-primary);">
+            Buku Sedang Dipinjam (Aktif)
+          </h3>
+          <span id="badge-count-aktif" class="badge badge-approved">0 Aktif</span>
+        </div>
+        <div id="grid-aktif" class="cards-grid">
+          <p style="color: var(--text-muted); padding: 16px;">Memuat buku yang sedang dipinjam...</p>
+        </div>
+
+        <!-- Seksi 3: Riwayat Peminjaman (Dikembalikan / Selesai) -->
+        <div class="section-header">
+          <span class="section-indicator indicator-blue"></span>
+          <h3 style="font-size: 16px; font-weight: 700; color: var(--text-primary);">
+            Riwayat Peminjaman (Selesai Dikembalikan)
+          </h3>
+          <span id="badge-count-riwayat" class="badge badge-returned">0 Selesai</span>
+        </div>
+        <div class="table-card">
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width: 50px; text-align: center;">No</th>
+                  <th>Peminjam</th>
+                  <th>Judul Buku</th>
+                  <th>Tanggal Pinjam</th>
+                  <th>Batas Tempo</th>
+                  <th>Tanggal Dikembalikan</th>
+                  <th style="text-align: center;">Status</th>
+                </tr>
+              </thead>
+              <tbody id="table-riwayat">
+                <tr>
+                  <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 32px;">Memuat riwayat peminjaman...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Modal Detail Peminjaman -->
+  <div id="modal-detail" class="modal-overlay">
+    <div class="modal-box modal-box-sm">
+      <div class="modal-header">
+        <h3>
+          <span class="material-symbols-outlined" style="color: var(--primary);">info</span>
+          <span>Detail Peminjaman</span>
+        </h3>
+        <button class="modal-close-btn" onclick="closeModal('modal-detail')">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="modal-body" id="detail-body">
+        <!-- Render dinamis via JS -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-detail')">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Logout -->
+  <div id="modal-logout" class="modal-overlay">
+    <div class="modal-box modal-box-sm">
+      <div class="modal-header">
+        <h3 style="color: var(--error);">
+          <span class="material-symbols-outlined">logout</span>
+          <span>Konfirmasi Logout</span>
+        </h3>
+        <button class="modal-close-btn" onclick="closeModal('modal-logout')">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Apakah Anda yakin ingin mengakhiri sesi Administrator?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-logout')">Batal</button>
+        <button type="button" class="btn btn-danger" onclick="confirmLogout()">Ya, Keluar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/admin-common.js"></script>
+  <script src="../js/peminjaman.js"></script>
+</body>
+</html>

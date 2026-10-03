@@ -226,7 +226,9 @@
 .login-form .form-input {
   padding-left: 34px;
   padding-right: 38px;
+  font-family: 'Inter', sans-serif;
   font-size: 12px;
+  font-weight: 600;
 }
 
 .login-form .form-input::placeholder {

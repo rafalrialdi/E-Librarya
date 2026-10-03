@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Admin - E-Library MTs Al-Falah Klender</title>
+  <link rel="stylesheet" href="../css/admin.css">
+  <style>
+    .dashboard-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+    @media (max-width: 900px) {
+      .dashboard-grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+    .chart-container {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-default);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+    .chart-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .chart-header h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .svg-chart {
+      width: 100%;
+      height: 220px;
+    }
+
+    .active-loans-section {
+      margin-top: 32px;
+    }
+    .active-loans-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-default);
+    }
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+    }
+
+    .loan-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-default);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .loan-top {
+      display: flex;
+      gap: 12px;
+    }
+    .loan-cover {
+      width: 50px;
+      height: 70px;
+      border-radius: 6px;
+      object-fit: cover;
+      background: var(--bg-input);
+      border: 1px solid var(--border-default);
+      flex-shrink: 0;
+    }
+    .loan-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .loan-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .loan-borrower {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+    .loan-dates {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      background-color: var(--bg-main);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+    }
+    .loan-date-item label {
+      color: var(--text-muted);
+      display: block;
+    }
+    .loan-date-item span {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside id="sidebar"></aside>
+
+    <!-- Main Canvas -->
+    <div class="main-wrapper">
+      <header id="top-header"></header>
+
+      <main class="page-content">
+        <!-- Statistik KPI Cards (PRD 6.1) -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">
+              <span class="material-symbols-outlined">menu_book</span>
+            </div>
+            <div class="stat-info">
+              <h3>Total Buku</h3>
+              <p id="stat-total-buku">-</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">
+              <span class="material-symbols-outlined">school</span>
+            </div>
+            <div class="stat-info">
+              <h3>Total Guru</h3>
+              <p id="stat-total-guru">-</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">
+              <span class="material-symbols-outlined">group</span>
+            </div>
+            <div class="stat-info">
+              <h3>Total Siswa</h3>
+              <p id="stat-total-siswa">-</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">
+              <span class="material-symbols-outlined">pending_actions</span>
+            </div>
+            <div class="stat-info">
+              <h3>Permintaan Pinjam</h3>
+              <p id="stat-total-menunggu">-</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">
+              <span class="material-symbols-outlined">sync_alt</span>
+            </div>
+            <div class="stat-info">
+              <h3>Buku Sedang Dipinjam</h3>
+              <p id="stat-total-disetujui">-</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">
+              <span class="material-symbols-outlined">task_alt</span>
+            </div>
+            <div class="stat-info">
+              <h3>Total Dikembalikan</h3>
+              <p id="stat-total-dikembalikan">-</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Grafik & Visualisasi (PRD 6.2) -->
+        <div class="dashboard-grid-2">
+          <div class="chart-container" style="grid-column: 1 / -1;">
+            <div class="chart-header">
+              <h3>Grafik Peminjaman Buku (6 Bulan Terakhir)</h3>
+              <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: var(--primary); border: 1px solid rgba(245, 158, 11, 0.3);">
+                Statistik Bulanan
+              </span>
+            </div>
+            <div id="chart-svg-box">
+              <p style="color: var(--text-muted); padding: 40px; text-align: center;">Memuat grafik peminjaman...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Seksi Peminjaman Buku Aktif (PRD 6.3) -->
+        <div class="active-loans-section">
+          <div class="active-loans-header">
+            <div>
+              <h3 style="font-size: 16px; font-weight: 700; color: var(--text-primary);">
+                Peminjaman Aktif (Perlu Dikembalikan)
+              </h3>
+              <p style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">
+                Diurutkan mulai dari tanggal jatuh tempo paling mendekati. Klik [Dikembalikan] untuk mengembalikan buku ke stok.
+              </p>
+            </div>
+            <a href="peminjaman.html" class="btn btn-secondary btn-sm">Lihat Semua di Peminjaman</a>
+          </div>
+
+          <div id="grid-peminjaman-aktif" class="cards-grid">
+            <p style="color: var(--text-muted); padding: 16px;">Memuat peminjaman aktif...</p>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Modal Logout -->
+  <div id="modal-logout" class="modal-overlay">
+    <div class="modal-box modal-box-sm">
+      <div class="modal-header">
+        <h3 style="color: var(--error);">
+          <span class="material-symbols-outlined">logout</span>
+          <span>Konfirmasi Logout</span>
+        </h3>
+        <button class="modal-close-btn" onclick="closeModal('modal-logout')">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Apakah Anda yakin ingin mengakhiri sesi Administrator?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-logout')">Batal</button>
+        <button type="button" class="btn btn-danger" onclick="confirmLogout()">Ya, Keluar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/admin-common.js"></script>
+  <script src="../js/dashboard.js"></script>
+</body>
+</html>

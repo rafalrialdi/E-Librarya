@@ -9,14 +9,16 @@ const pool = mysql.createPool({
   database: process.env.DB_NAME,
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
+  queueLimit: 0,
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 10000
 });
 
-// Test koneksi saat startup
+// Test koneksi
 (async () => {
   try {
     const conn = await pool.getConnection();
-    console.log('Database MySQL terhubung');
+    console.log('Database MySQL terhubungggg');
     conn.release();
   } catch (err) {
     console.error('Gagal koneksi database:', err.message);

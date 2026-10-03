@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manajemen Buku - E-Library MTs Al-Falah Klender</title>
+  <link rel="stylesheet" href="../css/admin.css">
+  <style>
+    .book-cover-cell {
+      width: 44px;
+      height: 60px;
+      border-radius: 6px;
+      object-fit: cover;
+      background: var(--bg-input);
+      border: 1px solid var(--border-default);
+    }
+    .upload-box {
+      border: 2px dashed var(--border-default);
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+      background-color: var(--bg-card);
+      cursor: pointer;
+      transition: border-color 0.15s ease;
+    }
+    .upload-box:hover {
+      border-color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside id="sidebar"></aside>
+
+    <!-- Main Canvas -->
+    <div class="main-wrapper">
+      <header id="top-header"></header>
+
+      <main class="page-content">
+        <!-- Toolbar & Filter -->
+        <div class="page-toolbar">
+          <div class="search-box">
+            <span class="material-symbols-outlined">search</span>
+            <input type="text" id="search-input" class="search-input" placeholder="Cari judul buku, penulis, ISBN..." oninput="filterData()">
+          </div>
+          <div class="filter-group">
+            <select id="filter-kategori" class="form-control" style="width: 180px;" onchange="filterData()">
+              <option value="">Semua Kategori</option>
+            </select>
+            <button class="btn btn-primary" onclick="openTambahModal()">
+              <span class="material-symbols-outlined">add</span>
+              <span>Tambah Buku</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Tabel Data -->
+        <div class="table-card">
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width: 60px; text-align: center;">Cover</th>
+                  <th>Judul Buku & Penulis</th>
+                  <th>Kategori</th>
+                  <th>Mapel / Kelas</th>
+                  <th style="text-align: center;">Stok</th>
+                  <th style="text-align: center;">E-Book</th>
+                  <th style="width: 140px; text-align: center;">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="table-body">
+                <tr>
+                  <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 32px;">Memuat data buku...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Modal Tambah / Edit Buku -->
+  <div id="modal-form" class="modal-overlay">
+    <div class="modal-box modal-box-lg">
+      <div class="modal-header">
+        <h3 id="modal-title">
+          <span class="material-symbols-outlined" style="color: var(--primary);">menu_book</span>
+          <span>Tambah Buku Baru</span>
+        </h3>
+        <button class="modal-close-btn" onclick="closeModal('modal-form')">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <form id="form-buku" onsubmit="handleFormSubmit(event)">
+        <input type="hidden" id="buku-id">
+        <div class="modal-body">
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label" for="judul">Judul Buku <span class="req">*</span></label>
+              <input type="text" id="judul" class="form-control" placeholder="Judul lengkap buku" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="penulis">Penulis <span class="req">*</span></label>
+              <input type="text" id="penulis" class="form-control" placeholder="Nama penulis" required>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label" for="penerbit">Penerbit</label>
+              <input type="text" id="penerbit" class="form-control" placeholder="Nama penerbit">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="tahun-terbit">Tahun Terbit</label>
+              <input type="number" id="tahun-terbit" class="form-control" placeholder="Contoh: 2024">
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label" for="isbn">Nomor ISBN</label>
+              <input type="text" id="isbn" class="form-control" placeholder="Contoh: 978-602-...">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="id-kategori">Kategori Buku</label>
+              <select id="id-kategori" class="form-control">
+                <option value="">Pilih Kategori</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label" for="id-mata-pelajaran">Mata Pelajaran (Opsional)</label>
+              <select id="id-mata-pelajaran" class="form-control">
+                <option value="">Tidak Terkait Mapel</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="id-kelas">Kategori Kelas (Opsional)</label>
+              <select id="id-kelas" class="form-control">
+                <option value="">Semua Kelas / Umum</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label" for="stok-total">Stok Fisik Tersedia <span class="req">*</span></label>
+              <input type="number" id="stok-total" class="form-control" min="0" placeholder="0" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="durasi-peminjaman">Durasi Peminjaman (Hari)</label>
+              <input type="number" id="durasi-peminjaman" class="form-control" value="7" readonly style="opacity: 0.8;">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="deskripsi">Sinopsis / Ringkasan Deskripsi</label>
+            <textarea id="deskripsi" class="form-control" placeholder="Tuliskan deskripsi isi buku..."></textarea>
+          </div>
+
+          <!-- File Uploads -->
+          <div class="form-grid-2" style="margin-top: 10px;">
+            <div class="form-group">
+              <label class="form-label">Upload Gambar Cover</label>
+              <div class="upload-box" onclick="document.getElementById('file-cover').click()">
+                <span class="material-symbols-outlined" style="font-size: 28px; color: var(--primary);">image</span>
+                <p id="label-cover" style="font-size: 12px; color: var(--text-secondary); margin-top: 6px;">Pilih cover (JPG/PNG)</p>
+              </div>
+              <input type="file" id="file-cover" accept="image/jpeg,image/png" style="display: none;" onchange="handleCoverSelect(this)">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Upload Berkas PDF (Digital)</label>
+              <div class="upload-box" onclick="document.getElementById('file-pdf').click()">
+                <span class="material-symbols-outlined" style="font-size: 28px; color: var(--secondary);">picture_as_pdf</span>
+                <p id="label-pdf" style="font-size: 12px; color: var(--text-secondary); margin-top: 6px;">Pilih berkas PDF</p>
+              </div>
+              <input type="file" id="file-pdf" accept="application/pdf" style="display: none;" onchange="handlePdfSelect(this)">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-form')">Batal</button>
+          <button type="submit" class="btn btn-primary" id="btn-submit-buku">Simpan Buku</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Hapus -->
+  <div id="modal-hapus" class="modal-overlay">
+    <div class="modal-box modal-box-sm">
+      <div class="modal-header">
+        <h3 style="color: var(--error);">
+          <span class="material-symbols-outlined">delete</span>
+          <span>Hapus Buku</span>
+        </h3>
+        <button class="modal-close-btn" onclick="closeModal('modal-hapus')">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Apakah Anda yakin ingin menghapus buku <strong id="hapus-judul" style="color: var(--text-primary);">-</strong>?</p>
+        <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">Berkas cover dan PDF di storage juga akan dihapus permanen.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-hapus')">Batal</button>
+        <button type="button" class="btn btn-danger" id="btn-konfirmasi-hapus">Ya, Hapus</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Logout -->
+  <div id="modal-logout" class="modal-overlay">
+    <div class="modal-box modal-box-sm">
+      <div class="modal-header">
+        <h3 style="color: var(--error);">
+          <span class="material-symbols-outlined">logout</span>
+          <span>Konfirmasi Logout</span>
+        </h3>
+        <button class="modal-close-btn" onclick="closeModal('modal-logout')">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Apakah Anda yakin ingin mengakhiri sesi Administrator?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-logout')">Batal</button>
+        <button type="button" class="btn btn-danger" onclick="confirmLogout()">Ya, Keluar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/admin-common.js"></script>
+  <script src="../js/buku.js"></script>
+</body>
+</html>
