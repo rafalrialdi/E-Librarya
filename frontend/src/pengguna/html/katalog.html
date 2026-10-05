@@ -3,29 +3,164 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Katalog Buku — E-Library MTs Al-Falah Klender</title>
+  <title>Katalog Koleksi Buku — E-Library MTs Al-Falah Klender</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
   <link rel="stylesheet" href="../css/user.css">
+  <style>
+    html { overflow-y: scroll; }
+    body { min-height: 100vh; }
+    html::-webkit-scrollbar { width: 12px; }
+    html::-webkit-scrollbar-track { background: #0a1929; }
+    html::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 6px; border: 2px solid #0a1929; }
+    html::-webkit-scrollbar-thumb:hover { background: #2d3f52; }
+    html { scrollbar-width: thin; scrollbar-color: #1e293b #0a1929; }
+    
+    .user-nav { padding: 0 32px; position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #131b26; }
+    .nav-inner { max-width: 1280px; margin: 0 auto; }
+    body { padding-top: 64px; }
+    .main { max-width: 1280px; margin: 0 auto; padding: 40px 32px 60px; }
+    
+    .profile-trigger:hover + .user-menu, .user-menu:hover, .user-menu.open { display: block; }
+    .nav-user:has(.icon-button:hover) .notification-popover, .notification-popover:hover, .notification-popover.open { display: block; }
+    .profile-menu a, .profile-menu button { font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 500; }
+    .profile-menu button { font-weight: 600; }
+    
+    input[type="search"], input[type="text"], select { font-family: 'Poppins', sans-serif; font-weight: 400; }
+    input::placeholder { font-family: 'Poppins', sans-serif; font-weight: 300; font-size: 14px; }
+    
+    .page-header { margin-bottom: 32px; }
+    .page-header h1 { font-size: 32px; font-weight: 700; color: #f8fafc; margin-bottom: 8px; }
+    .page-header p { color: #94a3b8; font-size: 14px; }
+    
+    .catalog-filter-card { background: #1a232e; border: 1px solid #2d3f52; border-radius: 12px; padding: 24px; margin-bottom: 32px; }
+    
+    .filter-search { margin-bottom: 20px; position: relative; }
+    .filter-search .material-symbols-outlined { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #64748b; font-size: 20px; }
+    .filter-search input { width: 100%; height: 48px; padding: 0 16px 0 48px; background: #0d1726; border: 1px solid #2d3f52; border-radius: 10px; color: #f8fafc; font-size: 14px; }
+    .filter-search input:focus { outline: none; border-color: #f59e0b; }
+    
+    .filter-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+    .filter-item { display: flex; flex-direction: column; gap: 8px; }
+    .filter-label { font-size: 10px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
+    .filter-select { height: 44px; padding: 0 36px 0 16px; background: #0d1726; border: 1px solid #2d3f52; border-radius: 8px; color: #cbd5e1; font-size: 13px; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%2394a3b8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; }
+    .filter-select:focus { outline: none; border-color: #f59e0b; }
+    
+    .filter-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 16px; border-top: 1px solid #2d3f52; }
+    .filter-count { display: flex; align-items: center; gap: 8px; color: #cbd5e1; font-size: 13px; }
+    .filter-count .material-symbols-outlined { color: #22c55e; font-size: 18px; }
+    .btn-reset-filter { display: flex; align-items: center; gap: 6px; height: 36px; padding: 0 16px; background: transparent; border: 1px solid #2d3f52; border-radius: 8px; color: #94a3b8; font-size: 13px; cursor: pointer; transition: all .2s; }
+    .btn-reset-filter:hover { border-color: #f59e0b; color: #fbbf24; }
+    
+    .catalog-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 40px; }
+    
+    .book-card { background: #1a232e; border: 1px solid #2d3f52; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; transition: all .3s; }
+    .book-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,.3); border-color: #f59e0b; }
+    
+    .book-cover { width: 100%; aspect-ratio: 3 / 4; border-radius: 8px; overflow: hidden; margin-bottom: 12px; background: #0d1726; }
+    .book-cover img { width: 100%; height: 100%; object-fit: cover; }
+    
+    .book-category { font-size: 11px; color: #64748b; margin-bottom: 6px; }
+    .book-title { font-size: 15px; font-weight: 600; color: #f8fafc; margin-bottom: 4px; line-height: 1.3; min-height: 40px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .book-meta { font-size: 12px; color: #64748b; margin-bottom: 12px; }
+    
+    .book-actions { display: flex; flex-direction: column; gap: 8px; margin-top: auto; }
+    .book-actions .btn { width: 100%; height: 40px; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; font-weight: 600; border-radius: 8px; cursor: pointer; transition: all .2s; }
+    .btn-read { background: #f59e0b; color: #051424; border: none; }
+    .btn-read:hover { background: #d97706; }
+    .btn-download { background: #1e293b; border: 1px solid #2d3f52; color: #cbd5e1; }
+    .btn-download:hover { background: #273647; }
+    
+    .pagination { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 40px; }
+    .pagination-info { font-size: 13px; color: #64748b; margin-right: 16px; }
+    .pagination button { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background: #1a232e; border: 1px solid #2d3f52; border-radius: 6px; color: #94a3b8; cursor: pointer; transition: all .2s; }
+    .pagination button:hover:not(:disabled) { background: #273647; border-color: #f59e0b; color: #f59e0b; }
+    .pagination button.active { background: #f59e0b; border-color: #f59e0b; color: #051424; font-weight: 700; }
+    .pagination button:disabled { opacity: 0.3; cursor: not-allowed; }
+    
+    .empty-state { text-align: center; padding: 60px 20px; grid-column: 1 / -1; }
+    .empty-state .material-symbols-outlined { font-size: 64px; color: #334155; margin-bottom: 16px; }
+    .empty-state h3 { font-size: 18px; color: #cbd5e1; margin-bottom: 8px; }
+    .empty-state p { color: #64748b; font-size: 14px; }
+    
+    @media (max-width: 1024px) {
+      .catalog-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    
+    @media (max-width: 768px) {
+      .filter-grid { grid-template-columns: repeat(2, 1fr); }
+      .catalog-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    }
+  </style>
 </head>
 <body>
   <header id="user-nav" class="user-nav"></header>
 
   <main class="main">
-    <div class="stitch-page-heading"><h1>Katalog Koleksi Buku</h1><p>Jelajahi dan temukan seluruh buku digital & fisik madrasah terakreditasi</p></div>
-    <div class="catalog-console">
-      <div class="catalog-search"><span class="material-symbols-outlined">search</span><input type="text" id="search-book" class="form-input" placeholder="Cari judul buku..."></div>
-      <div class="catalog-filters">
-        <label>Kategori<select id="filter-category" class="form-select"><option value="">Semua Kategori</option></select></label>
-        <label>Mata Pelajaran<select id="filter-subject" class="form-select"><option value="">Semua Mapel</option></select></label>
-        <label>Tingkat Kelas<select id="filter-class" class="form-select"><option value="">Semua Kelas</option></select></label>
-        <label>Urutan<select id="filter-sort" class="form-select"><option value="title-asc">Judul A-Z</option><option value="title-desc">Judul Z-A</option><option value="year-newest">Tahun Terbaru</option><option value="year-oldest">Tahun Terlama</option></select></label>
-      </div>
-      <div class="catalog-status"><span id="catalog-count">Memuat...</span><button onclick="resetCatalogFilters()"><span class="material-symbols-outlined">restart_alt</span> Reset Filter</button></div>
+    <div class="page-header">
+      <h1>Katalog Koleksi Buku</h1>
+      <p>Jelajahi dan temukan seluruh buku digital & fisik madrasah terakreditasi</p>
     </div>
-    <div id="catalog-grid" class="book-grid stitch-catalog-grid"></div>
+
+    <div class="catalog-filter-card">
+      <div class="filter-search">
+        <span class="material-symbols-outlined">search</span>
+        <input type="text" id="search-input" placeholder="Cari judul buku...">
+      </div>
+
+      <div class="filter-grid">
+        <div class="filter-item">
+          <label class="filter-label">Kategori</label>
+          <select id="filter-kategori" class="filter-select">
+            <option value="">Semua Kategori</option>
+          </select>
+        </div>
+
+        <div class="filter-item">
+          <label class="filter-label">Mata Pelajaran</label>
+          <select id="filter-mapel" class="filter-select">
+            <option value="">Semua Mapel</option>
+          </select>
+        </div>
+
+        <div class="filter-item">
+          <label class="filter-label">Tingkat Kelas</label>
+          <select id="filter-kelas" class="filter-select">
+            <option value="">Semua Kelas</option>
+            <option value="VII">Kelas VII</option>
+            <option value="VIII">Kelas VIII</option>
+            <option value="IX">Kelas IX</option>
+          </select>
+        </div>
+
+        <div class="filter-item">
+          <label class="filter-label">Urutan</label>
+          <select id="filter-sort" class="filter-select">
+            <option value="title-asc">Judul A-Z</option>
+            <option value="title-desc">Judul Z-A</option>
+            <option value="year-newest">Tahun Terbaru</option>
+            <option value="year-oldest">Tahun Terlama</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="filter-footer">
+        <div class="filter-count">
+          <span class="material-symbols-outlined">check_circle</span>
+          <span>Menampilkan <strong id="book-count">12 Buku</strong> Tersedia</span>
+        </div>
+        <button class="btn-reset-filter" onclick="resetFilters()">
+          <span class="material-symbols-outlined">restart_alt</span>
+          <span>Reset Filter</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="catalog-grid" class="catalog-grid"></div>
+
+    <div class="pagination" id="pagination"></div>
   </main>
 
   <div id="user-toast"></div>

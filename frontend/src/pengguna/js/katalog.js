@@ -1,31 +1,242 @@
+let allBooks = [];
+let filteredBooks = [];
+let currentPage = 1;
+const booksPerPage = 12;
+
 document.addEventListener('DOMContentLoaded', async () => {
   renderNav('katalog');
   renderFooter();
-  const params = new URLSearchParams(location.search);
-  document.getElementById('search-book').value = params.get('q') || '';
-  await Promise.all([loadCatalog(), loadFilters()]);
-  document.getElementById('search-book').addEventListener('input', renderFilteredBooks);
-  ['filter-category', 'filter-subject', 'filter-class', 'filter-sort'].forEach(id => document.getElementById(id).addEventListener('change', renderFilteredBooks));
+  await loadFilters();
+  await loadBooks();
+  
+  document.getElementById('search-input').addEventListener('input', debounce(applyFilters, 300));
+  document.getElementById('filter-kategori').addEventListener('change', applyFilters);
+  document.getElementById('filter-mapel').addEventListener('change', applyFilters);
+  document.getElementById('filter-kelas').addEventListener('change', applyFilters);
+  document.getElementById('filter-sort').addEventListener('change', applyFilters);
 });
-let books = [];
-async function loadCatalog() { const res = await fetchUserAPI('/buku'); if (res?.success) { books = res.data; renderFilteredBooks(); } else document.getElementById('catalog-grid').innerHTML = '<div class="empty-state"><span class="material-symbols-outlined">cloud_off</span><p>Katalog belum dapat dimuat.</p></div>'; }
+
 async function loadFilters() {
-  const [categories, subjects, classes] = await Promise.all([fetchUserAPI('/kategori-buku'), fetchUserAPI('/mata-pelajaran'), fetchUserAPI('/kategori-kelas')]);
-  if (categories?.success) document.getElementById('filter-category').innerHTML += categories.data.map(item => `<option value="${item.id}">${item.nama}</option>`).join('');
-  if (subjects?.success) document.getElementById('filter-subject').innerHTML += subjects.data.map(item => `<option value="${item.id}">${item.nama}</option>`).join('');
-  if (classes?.success) document.getElementById('filter-class').innerHTML += classes.data.map(item => `<option value="${item.id}">${item.nama}</option>`).join('');
+  const [resKat, resMapel] = await Promise.all([
+    fetchUserAPI('/kategori-buku'),
+    fetchUserAPI('/mata-pelajaran')
+  ]);
+  
+  if (resKat?.success) {
+    const filterKat = document.getElementById('filter-kategori');
+    resKat.data.forEach(k => {
+      filterKat.innerHTML += `<option value="${k.id}">${k.nama}</option>`;
+    });
+  }
+  
+  if (resMapel?.success) {
+    const filterMapel = document.getElementById('filter-mapel');
+    resMapel.data.forEach(m => {
+      filterMapel.innerHTML += `<option value="${m.id}">${m.nama}</option>`;
+    });
+  }
 }
-function renderFilteredBooks() {
-  const query = document.getElementById('search-book').value.toLowerCase();
-  const category = document.getElementById('filter-category').value;
-  const subject = document.getElementById('filter-subject').value;
-  const classId = document.getElementById('filter-class').value;
+
+async function loadBooks() {
+  const res = await fetchUserAPI('/buku');
+  
+  if (res?.success) {
+    allBooks = res.data || [];
+    filteredBooks = [...allBooks];
+    applyFilters();
+  } else {
+    document.getElementById('catalog-grid').innerHTML = `
+      <div class="empty-state">
+        <span class="material-symbols-outlined">error</span>
+        <h3>Gagal memuat katalog</h3>
+        <p>Terjadi kesalahan saat memuat data buku</p>
+      </div>
+    `;
+  }
+}
+
+function applyFilters() {
+  const keyword = document.getElementById('search-input').value.toLowerCase();
+  const kategoriId = document.getElementById('filter-kategori').value;
+  const mapelId = document.getElementById('filter-mapel').value;
+  const kelas = document.getElementById('filter-kelas').value;
   const sort = document.getElementById('filter-sort').value;
-  const filtered = books.filter(book => (!query || `${book.judul} ${book.penulis} ${book.nama_mata_pelajaran}`.toLowerCase().includes(query)) && (!category || String(book.id_kategori) === category) && (!subject || String(book.id_mata_pelajaran) === subject) && (!classId || String(book.id_kelas) === classId));
-  filtered.sort((a, b) => sort === 'title-desc' ? b.judul.localeCompare(a.judul) : sort === 'year-newest' ? (b.tahun_terbit || 0) - (a.tahun_terbit || 0) : sort === 'year-oldest' ? (a.tahun_terbit || 0) - (b.tahun_terbit || 0) : a.judul.localeCompare(b.judul));
-  document.getElementById('catalog-count').textContent = `Menampilkan ${filtered.length} Buku Tersedia`;
-  document.getElementById('catalog-grid').innerHTML = filtered.length ? filtered.map(stitchCatalogCard).join('') : '<div class="empty-state"><span class="material-symbols-outlined">search_off</span><p>Tidak ada buku yang cocok. Coba kata kunci lain.</p></div>';
+  
+  filteredBooks = allBooks.filter(book => {
+    const matchKeyword = !keyword || 
+      book.judul.toLowerCase().includes(keyword) ||
+      (book.penulis && book.penulis.toLowerCase().includes(keyword));
+    
+    const matchKategori = !kategoriId || String(book.id_kategori) === String(kategoriId);
+    const matchMapel = !mapelId || String(book.id_mata_pelajaran) === String(mapelId);
+    const matchKelas = !kelas || book.tingkat_kelas === kelas;
+    
+    return matchKeyword && matchKategori && matchMapel && matchKelas;
+  });
+  
+  filteredBooks.sort((a, b) => {
+    switch(sort) {
+      case 'title-desc':
+        return b.judul.localeCompare(a.judul);
+      case 'year-newest':
+        return (b.tahun_terbit || 0) - (a.tahun_terbit || 0);
+      case 'year-oldest':
+        return (a.tahun_terbit || 0) - (b.tahun_terbit || 0);
+      default:
+        return a.judul.localeCompare(b.judul);
+    }
+  });
+  
+  currentPage = 1;
+  renderBooks();
+  updateBookCount();
 }
-function stitchCatalogCard(book) { return `<article class="catalog-card"><a href="detail.html?id=${book.id}" class="catalog-cover"><img src="${coverUrl(book.cover_url)}" alt="Sampul ${book.judul}"></a><span class="catalog-tag">${book.nama_kategori || 'Koleksi'}</span><h2>${book.judul}</h2><p>${book.penulis || 'Penulis tidak tercantum'}${book.tahun_terbit ? ` • ${book.tahun_terbit}` : ''}</p><div class="stitch-card-actions"><a class="btn btn-primary" href="detail.html?id=${book.id}"><span class="material-symbols-outlined">menu_book</span> Baca Buku</a><button class="btn btn-secondary" onclick="downloadCatalogBook(${book.id})"><span class="material-symbols-outlined">download</span> Download Buku</button></div></article>`; }
-async function downloadCatalogBook(id) { const res = await fetchUserAPI(`/buku/${id}`); if (!res?.success || !res.data.pdf_url) { showUserToast('E-book belum tersedia', 'error'); return; } await fetchUserAPI('/riwayat-baca', { method: 'POST', body: JSON.stringify({ id_buku: id }) }); window.open(res.data.pdf_url, '_blank'); }
-function resetCatalogFilters() { ['search-book', 'filter-category', 'filter-subject', 'filter-class'].forEach(id => document.getElementById(id).value = ''); document.getElementById('filter-sort').value = 'title-asc'; renderFilteredBooks(); }
+
+function renderBooks() {
+  const grid = document.getElementById('catalog-grid');
+  const startIdx = (currentPage - 1) * booksPerPage;
+  const endIdx = startIdx + booksPerPage;
+  const booksToShow = filteredBooks.slice(startIdx, endIdx);
+  
+  if (booksToShow.length === 0) {
+    grid.innerHTML = `
+      <div class="empty-state">
+        <span class="material-symbols-outlined">search_off</span>
+        <h3>Tidak ada buku ditemukan</h3>
+        <p>Coba ubah filter pencarian Anda</p>
+      </div>
+    `;
+    document.getElementById('pagination').innerHTML = '';
+    return;
+  }
+  
+  grid.innerHTML = booksToShow.map(book => `
+    <div class="book-card">
+      <a href="detail.html?id=${book.id}&from=katalog" class="book-cover">
+        <img src="${coverUrl(book.cover_url)}" alt="${book.judul}">
+      </a>
+      <div class="book-category">${book.nama_kategori || 'Umum'}</div>
+      <h3 class="book-title">${book.judul}</h3>
+      <div class="book-meta">${book.penerbit || 'Penerbit tidak tercantum'} • ${book.tahun_terbit || '-'}</div>
+      <div class="book-actions">
+        <button class="btn btn-read" onclick="readBook(${book.id}, '${book.pdf_url || ''}')">
+          <span class="material-symbols-outlined">menu_book</span>
+          <span>Baca Buku</span>
+        </button>
+        <button class="btn btn-download" onclick="downloadBook(${book.id}, '${String(book.judul).replace(/'/g, "\\'")}', '${book.pdf_url || ''}')">
+          <span class="material-symbols-outlined">download</span>
+          <span>Download Buku</span>
+        </button>
+      </div>
+    </div>
+  `).join('');
+  
+  renderPagination();
+}
+
+function renderPagination() {
+  const totalPages = Math.ceil(filteredBooks.length / booksPerPage);
+  const pagination = document.getElementById('pagination');
+  
+  if (totalPages <= 1) {
+    pagination.innerHTML = '';
+    return;
+  }
+  
+  let html = `<span class="pagination-info">Halaman ${currentPage} dari ${totalPages}</span>`;
+  
+  html += `<button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+    <span class="material-symbols-outlined">chevron_left</span>
+  </button>`;
+  
+  for (let i = 1; i <= totalPages; i++) {
+    if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+      html += `<button class="${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+    } else if (i === currentPage - 2 || i === currentPage + 2) {
+      html += `<span style="color: #64748b; padding: 0 4px;">...</span>`;
+    }
+  }
+  
+  html += `<button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+    <span class="material-symbols-outlined">chevron_right</span>
+  </button>`;
+  
+  pagination.innerHTML = html;
+}
+
+function changePage(page) {
+  const totalPages = Math.ceil(filteredBooks.length / booksPerPage);
+  if (page < 1 || page > totalPages) return;
+  currentPage = page;
+  renderBooks();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateBookCount() {
+  document.getElementById('book-count').textContent = `${filteredBooks.length} Buku`;
+}
+
+function resetFilters() {
+  document.getElementById('search-input').value = '';
+  document.getElementById('filter-kategori').value = '';
+  document.getElementById('filter-mapel').value = '';
+  document.getElementById('filter-kelas').value = '';
+  document.getElementById('filter-sort').value = 'title-asc';
+  applyFilters();
+}
+
+function readBook(id, pdfUrl) {
+  if (!pdfUrl) {
+    showUserToast('E-book belum tersedia', 'error');
+    return;
+  }
+  recordRead(id);
+  window.open(pdfUrl, '_blank');
+}
+
+async function downloadBook(id, title, pdfUrl) {
+  if (!pdfUrl) {
+    showUserToast('E-book belum tersedia untuk diunduh', 'error');
+    return;
+  }
+  
+  try {
+    showUserToast('Memulai unduhan...', 'info');
+    const response = await fetch(pdfUrl);
+    if (!response.ok) throw new Error('Gagal mengunduh');
+    
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${title}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    
+    recordRead(id);
+    showUserToast(`Download "${title}" berhasil`, 'success');
+  } catch (error) {
+    showUserToast('Gagal mengunduh buku', 'error');
+  }
+}
+
+function recordRead(id) {
+  fetchUserAPI('/riwayat-baca', {
+    method: 'POST',
+    body: JSON.stringify({ id_buku: id })
+  });
+}
+
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}

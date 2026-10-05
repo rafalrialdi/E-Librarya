@@ -6,19 +6,161 @@
   <title>Detail Buku — E-Library MTs Al-Falah Klender</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
   <link rel="stylesheet" href="../css/user.css">
+  <style>
+    html { overflow-y: scroll; }
+    body { min-height: 100vh; }
+    html::-webkit-scrollbar { width: 12px; }
+    html::-webkit-scrollbar-track { background: #0a1929; }
+    html::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 6px; border: 2px solid #0a1929; }
+    html::-webkit-scrollbar-thumb:hover { background: #2d3f52; }
+    html { scrollbar-width: thin; scrollbar-color: #1e293b #0a1929; }
+    
+    .user-nav { padding: 0 32px; position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #131b26; }
+    .nav-inner { max-width: 1280px; margin: 0 auto; }
+    body { padding-top: 64px; }
+    .main { max-width: 1280px; margin: 0 auto; padding: 32px; }
+    
+    .profile-trigger:hover + .user-menu, .user-menu:hover, .user-menu.open { display: block; }
+    .nav-user:has(.icon-button:hover) .notification-popover, .notification-popover:hover, .notification-popover.open { display: block; }
+    .profile-menu a, .profile-menu button { font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 500; }
+    .profile-menu button { font-weight: 600; }
+    
+    input[type="search"], input[type="text"], input[type="email"], input[type="password"], select, textarea { font-family: 'Poppins', sans-serif; font-weight: 400; letter-spacing: 0.01em; }
+    input::placeholder, textarea::placeholder { font-family: 'Poppins', sans-serif; font-weight: 300; font-size: 14px; letter-spacing: 0.02em; }
+    
+    .detail-header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .btn-back-catalog { display: inline-flex; align-items: center; gap: 6px; padding: 10px 16px; background: #1a232e; border: 1px solid #2d3f52; border-radius: 8px; color: #cbd5e1; font-size: 13px; text-decoration: none; transition: all .2s; }
+    .btn-back-catalog:hover { background: #273647; border-color: #f59e0b; color: #fbbf24; }
+    
+    .detail-container { display: grid; grid-template-columns: 320px 1fr; gap: 24px; }
+    
+    .detail-left { background: #1a232e; border: 1px solid #2d3f52; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; }
+    
+    .detail-cover-wrapper { width: 100%; aspect-ratio: 3 / 4; border-radius: 10px; overflow: hidden; background: #0d1726; margin-bottom: 12px; box-shadow: 0 8px 24px rgba(0,0,0,.4); }
+    .detail-cover-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+    
+    .detail-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+    .detail-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 600; }
+    .badge-category { background: rgba(245, 158, 11, .15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, .3); }
+    .badge-class { background: rgba(34, 197, 94, .15); color: #22c55e; border: 1px solid rgba(34, 197, 94, .3); }
+    .badge-mapel { background: rgba(59, 130, 246, .15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, .3); }
+    
+    .detail-actions { display: flex; flex-direction: column; gap: 8px; margin-top: auto; }
+    .detail-actions .btn { width: 100%; height: 40px; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; font-weight: 600; border-radius: 8px; cursor: pointer; transition: all .2s; border: none; }
+    .btn-read { background: #f59e0b; color: #051424; }
+    .btn-read:hover { background: #d97706; }
+    .btn-download { background: #1e293b; color: #cbd5e1; border: 1px solid #334155; }
+    .btn-download:hover { background: #273647; }
+    .btn-borrow { background: #065f46; color: #6ee7b7; border: 1px solid #047857; }
+    .btn-borrow:hover { background: #047857; }
+    
+    .detail-info-notice { display: flex; align-items: start; gap: 8px; padding: 10px; background: rgba(251, 191, 36, .1); border: 1px solid rgba(251, 191, 36, .2); border-radius: 8px; margin-top: 10px; }
+    .detail-info-notice .material-symbols-outlined { color: #fbbf24; font-size: 16px; margin-top: 1px; }
+    .detail-info-notice p { font-size: 10px; color: #cbd5e1; line-height: 1.4; }
+    .detail-info-notice strong { color: #fbbf24; }
+    
+    .detail-right { display: flex; flex-direction: column; gap: 16px; }
+    
+    .detail-title-section { background: #1a232e; border: 1px solid #2d3f52; border-radius: 16px; padding: 20px; }
+    .detail-title-tags { display: flex; gap: 8px; margin-bottom: 12px; }
+    .title-tag { padding: 6px 14px; border-radius: 6px; font-size: 11px; font-weight: 600; }
+    .title-tag-primary { background: rgba(245, 158, 11, .2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, .3); }
+    .title-tag-secondary { background: rgba(100, 116, 139, .2); color: #94a3b8; border: 1px solid rgba(100, 116, 139, .3); }
+    
+    .detail-title-section h1 { font-size: 24px; font-weight: 700; color: #f8fafc; margin-bottom: 6px; line-height: 1.3; }
+    .detail-subtitle { font-size: 13px; color: #94a3b8; line-height: 1.5; }
+    
+    .detail-info-grid-section { background: #1a232e; border: 1px solid #2d3f52; border-radius: 16px; padding: 20px; }
+    .detail-info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .info-item { display: flex; flex-direction: column; gap: 4px; padding: 12px; background: #0d1726; border: 1px solid #243040; border-radius: 8px; }
+    .info-label { font-size: 10px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+    .info-value { font-size: 13px; color: #f8fafc; font-weight: 600; }
+    .info-value.highlight { color: #22c55e; }
+    .info-value.warning { color: #fbbf24; }
+    .info-value.error { color: #ef4444; }
+    
+    .detail-description-section { background: #1a232e; border: 1px solid #2d3f52; border-radius: 16px; padding: 20px; }
+    .detail-section-title { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; color: #f8fafc; margin-bottom: 12px; }
+    .detail-section-title .material-symbols-outlined { font-size: 18px; color: #f59e0b; }
+    .detail-description { color: #cbd5e1; font-size: 13px; line-height: 1.6; }
+    
+    @media (max-width: 768px) {
+      .detail-container { grid-template-columns: 1fr; gap: 24px; }
+      .detail-cover-section { max-width: 280px; margin: 0 auto; }
+      .detail-header h1 { font-size: 24px; }
+    }
+  </style>
 </head>
 <body>
   <header id="user-nav" class="user-nav"></header>
-  <main class="main"><a class="back-link" href="katalog.html"><span class="material-symbols-outlined">arrow_back</span> Kembali ke katalog</a>
-    <article class="book-detail">
-      <div class="detail-cover-wrap"><img id="detail-cover" class="detail-cover" src="../../../assset/logosekolah.jpeg" alt="Sampul buku"></div>
-      <div class="detail-content"><span class="book-tag">Detail koleksi</span><h1 id="detail-title">Memuat buku...</h1><p class="detail-author">oleh <strong id="detail-author">-</strong></p><div class="detail-actions"><button id="btn-borrow" class="btn btn-primary"><span class="material-symbols-outlined">bookmark_add</span> Pinjam buku</button><button id="btn-read" class="btn btn-secondary"><span class="material-symbols-outlined">menu_book</span> Baca E-Book</button></div><p id="detail-desc" class="detail-description">-</p><dl class="book-meta"><div><dt>Penerbit</dt><dd id="detail-publisher">-</dd></div><div><dt>ISBN</dt><dd id="detail-isbn">-</dd></div><div><dt>Kategori</dt><dd id="detail-category">-</dd></div><div><dt>Mata pelajaran</dt><dd id="detail-subject">-</dd></div><div><dt>Kelas</dt><dd id="detail-class">-</dd></div><div><dt>Ketersediaan</dt><dd id="detail-stock">-</dd></div></dl></div>
-    </article>
+
+  <main class="main">
+    <div class="detail-header-bar">
+      <a href="katalog.html" class="btn-back-catalog" id="btn-back">
+        <span class="material-symbols-outlined">arrow_back</span>
+        <span id="back-text">Kembali ke Katalog</span>
+      </a>
+    </div>
+
+    <div class="detail-container">
+      <div class="detail-left">
+        <div class="detail-cover-wrapper">
+          <img id="book-cover" src="../../../assset/logosekolah.jpeg" alt="Cover Buku">
+        </div>
+        
+        <div class="detail-badges" id="book-badges"></div>
+        
+        <div class="detail-actions">
+          <button class="btn btn-read" onclick="readBook()">
+            <span class="material-symbols-outlined">menu_book</span>
+            <span>Baca Buku</span>
+          </button>
+          <button class="btn btn-download" onclick="downloadBook()">
+            <span class="material-symbols-outlined">download</span>
+            <span>Download Buku</span>
+          </button>
+          <button class="btn btn-borrow" onclick="borrowBook()">
+            <span class="material-symbols-outlined">local_library</span>
+            <span>Pinjam Buku Fisik</span>
+          </button>
+        </div>
+        
+        <div class="detail-info-notice" id="durasi-notice">
+          <span class="material-symbols-outlined">info</span>
+          <p>Durasi peminjaman buku fisik <strong>7 hari (tidak dapat diperpanjang)</strong> terhitung sejak persetujuan Admin Sirkulasi. Harap kembalikan tepat waktu ke ruang perpustakaan.</p>
+        </div>
+      </div>
+
+      <div class="detail-right">
+        <div class="detail-title-section">
+          <div class="detail-title-tags" id="title-tags"></div>
+          <h1 id="book-title">Memuat...</h1>
+          <p class="detail-subtitle" id="book-subtitle"></p>
+        </div>
+
+        <div class="detail-info-grid-section">
+          <div class="detail-info-grid" id="book-info-grid"></div>
+        </div>
+
+        <div class="detail-description-section">
+          <h2 class="detail-section-title">
+            <span class="material-symbols-outlined">description</span>
+            <span>Deskripsi & Sinopsis Buku</span>
+          </h2>
+          <div class="detail-description" id="book-description">
+            <p>Memuat deskripsi...</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
-<div id="user-toast"></div>
-  <script src="../js/user-common.js"></script><script src="../js/detail-buku.js"></script>
+
+  <div id="user-toast"></div>
+
+  <script src="../js/user-common.js"></script>
+  <script src="../js/detail-buku.js"></script>
 </body>
 </html>

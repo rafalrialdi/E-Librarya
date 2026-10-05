@@ -6,52 +6,25 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function loadPeminjaman() {
   const res = await fetchUserAPI('/peminjaman/saya');
-  const grid = document.getElementById('loan-grid');
-  if (!res?.success) {
-    grid.innerHTML = '<div class="empty-state"><span class="material-symbols-outlined">cloud_off</span><p>Peminjaman tidak dapat dimuat.</p></div>';
-    return;
+  
+  if (res?.success && res.data?.length > 0) {
+    renderPeminjaman(res.data);
   }
-  const loans = res.data;
-  if (!loans.length) {
-    grid.innerHTML = '<div class="empty-state"><span class="material-symbols-outlined">assignment</span><p>Belum ada riwayat peminjaman.</p></div>';
-    return;
-  }
-  const byStatus = { menunggu: [], disetujui: [], ditolak: [], dikembalikan: [] };
-  loans.forEach(loan => {
-    const arr = byStatus[loan.status] || [];
-    arr.push(loan);
-    byStatus[loan.status] = arr;
-  });
+}
 
-  const sections = [
-    { key: 'menunggu', label: 'Permintaan', icon: 'hourglass_empty' },
-    { key: 'disetujui', label: 'Aktif', icon: 'book_outlined' },
-    { key: 'ditolak', label: 'Ditolak', icon: 'cancel' },
-    { key: 'dikembalikan', label: 'Dikembalikan', icon: 'check_circle' }
-  ];
-
-  let html = '';
-  sections.forEach(({ key, label }) => {
-    const items = byStatus[key] || [];
-    if (!items.length) return;
-    html += `<section><h2>${label} <span class="badge badge-${key}">${items.length}</span></h2><div class="loan-list">`;
-    items.forEach(loan => {
-      html += `<div class="loan-item">
-        <img src="${coverUrl(loan.cover_url)}" alt="">
-        <div class="loan-content">
-          <h3>${loan.judul_buku}</h3>
-          <p class="loan-author">${loan.penulis}</p>
-          <div class="loan-meta">
-            <span class="material-symbols-outlined">event_available</span><span>Pinjam: ${formatUserDate(loan.tgl_pinjam)}</span>
-            <span class="material-symbols-outlined">event_busy</span><span>Tempo: ${formatUserDate(loan.tgl_jatuh_tempo)}</span>
-          </div>
-          <div class="loan-status">${statusBadge(loan.status)}</div>
-          ${loan.catatan_admin ? `<blockquote>${loan.catatan_admin}</blockquote>` : ''}
-          ${loan.pdf_url ? `<a class="text-link" href="detail.html?id=${loan.id_buku}"><span class="material-symbols-outlined">menu_book</span> Baca buku</a>` : ''}
+function renderPeminjaman(loans) {
+  const list = document.getElementById('loan-list');
+  list.innerHTML = loans.map(loan => `
+    <div style="background: #1a232e; border: 1px solid #2d3f52; border-radius: 12px; padding: 16px; margin-bottom: 16px; display: flex; gap: 16px;">
+      <img src="${coverUrl(loan.cover_url)}" alt="${loan.judul_buku}" style="width: 80px; height: 106px; object-fit: cover; border-radius: 8px;">
+      <div style="flex: 1;">
+        ${statusBadge(loan.status)}
+        <h3 style="margin: 8px 0; font-size: 16px; color: #f8fafc;">${loan.judul_buku}</h3>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 12px; color: #94a3b8;">
+          <div><strong>Tgl Pinjam:</strong> ${formatUserDate(loan.tgl_pinjam)}</div>
+          <div><strong>Jatuh Tempo:</strong> ${formatUserDate(loan.tgl_jatuh_tempo)}</div>
         </div>
-      </div>`;
-    });
-    html += '</div></section>';
-  });
-  grid.innerHTML = html;
+      </div>
+    </div>
+  `).join('');
 }
