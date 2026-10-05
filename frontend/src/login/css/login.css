@@ -204,9 +204,11 @@
 }
 
 .form-label {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-secondary);
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.01em;
 }
 
 .input-wrap {
@@ -227,8 +229,9 @@
   padding-left: 34px;
   padding-right: 38px;
   font-family: 'Inter', sans-serif;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
+  letter-spacing: 0.04em;
 }
 
 .login-form .form-input::placeholder {

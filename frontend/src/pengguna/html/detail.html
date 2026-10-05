@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detail Buku — E-Library MTs Al-Falah Klender</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  <link rel="stylesheet" href="../css/user.css">
+</head>
+<body>
+  <header id="user-nav" class="user-nav"></header>
+  <main class="main"><a class="back-link" href="katalog.html"><span class="material-symbols-outlined">arrow_back</span> Kembali ke katalog</a>
+    <article class="book-detail">
+      <div class="detail-cover-wrap"><img id="detail-cover" class="detail-cover" src="../../../assset/logosekolah.jpeg" alt="Sampul buku"></div>
+      <div class="detail-content"><span class="book-tag">Detail koleksi</span><h1 id="detail-title">Memuat buku...</h1><p class="detail-author">oleh <strong id="detail-author">-</strong></p><div class="detail-actions"><button id="btn-borrow" class="btn btn-primary"><span class="material-symbols-outlined">bookmark_add</span> Pinjam buku</button><button id="btn-read" class="btn btn-secondary"><span class="material-symbols-outlined">menu_book</span> Baca E-Book</button></div><p id="detail-desc" class="detail-description">-</p><dl class="book-meta"><div><dt>Penerbit</dt><dd id="detail-publisher">-</dd></div><div><dt>ISBN</dt><dd id="detail-isbn">-</dd></div><div><dt>Kategori</dt><dd id="detail-category">-</dd></div><div><dt>Mata pelajaran</dt><dd id="detail-subject">-</dd></div><div><dt>Kelas</dt><dd id="detail-class">-</dd></div><div><dt>Ketersediaan</dt><dd id="detail-stock">-</dd></div></dl></div>
+    </article>
+  </main>
+<div id="user-toast"></div>
+  <script src="../js/user-common.js"></script><script src="../js/detail-buku.js"></script>
+</body>
+</html>

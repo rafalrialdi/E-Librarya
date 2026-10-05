@@ -15,7 +15,32 @@ const API_BASE = 'http://localhost:3000/api';
   }
 })();
 
-// 2. Fetch Wrapper dengan Authorization Header
+// Resource Cache Versioning
+function getResourceKey(endpoint) {
+  const clean = endpoint.split('?')[0].replace(/^\//, '');
+  return clean.split('/')[0] || 'root';
+}
+
+function getCacheVersion(resourceKey) {
+  try {
+    return localStorage.getItem(`cache_ver_${resourceKey}`) || localStorage.getItem('cache_ver_global') || 'v1';
+  } catch (e) {
+    return 'v1';
+  }
+}
+
+function invalidateCache(endpoint) {
+  const key = getResourceKey(endpoint);
+  const newVer = Date.now().toString();
+  try {
+    localStorage.setItem('cache_ver_global', newVer);
+    localStorage.setItem(`cache_ver_${key}`, newVer);
+    const allResources = ['dashboard', 'buku', 'pengguna', 'kategori-buku', 'mata-pelajaran', 'kategori-kelas', 'peminjaman', 'profil', 'riwayat-baca'];
+    allResources.forEach(r => localStorage.setItem(`cache_ver_${r}`, newVer));
+  } catch (e) {}
+}
+
+// 2. Fetch Wrapper dengan Authorization Header & Cache Versioning
 async function fetchAPI(endpoint, options = {}) {
   const token = localStorage.getItem('token');
   const defaultHeaders = {
@@ -27,7 +52,12 @@ async function fetchAPI(endpoint, options = {}) {
     defaultHeaders['Content-Type'] = 'application/json';
   }
 
+  const method = (options.method || 'GET').toUpperCase();
+  const isGet = method === 'GET';
+  const resourceKey = getResourceKey(endpoint);
+
   const config = {
+    cache: isGet ? 'default' : 'no-store',
     ...options,
     headers: {
       ...defaultHeaders,
@@ -36,7 +66,12 @@ async function fetchAPI(endpoint, options = {}) {
   };
 
   try {
-    const res = await fetch(`${API_BASE}${endpoint}`, config);
+    const version = getCacheVersion(resourceKey);
+    const requestUrl = isGet
+      ? `${API_BASE}${endpoint}${endpoint.includes('?') ? '&' : '?'}v=${version}`
+      : `${API_BASE}${endpoint}`;
+
+    const res = await fetch(requestUrl, config);
     if (res.status === 401 || res.status === 403) {
       showToast('Sesi telah berakhir atau akses ditolak', 'error');
       setTimeout(() => {
@@ -48,6 +83,9 @@ async function fetchAPI(endpoint, options = {}) {
     const data = await res.json();
     if (!res.ok) {
       console.warn(`[API] Endpoint ${endpoint} returned ${res.status}:`, data);
+    } else if (!isGet) {
+      // Jika POST/PUT/DELETE sukses, otomatis perbarui versi cache resource terkait
+      invalidateCache(endpoint);
     }
     return data;
   } catch (err) {
@@ -86,7 +124,7 @@ function initSidebar(activeMenuKey) {
     </div>
     <nav class="sidebar-nav">
       ${menus.map(m => `
-        <a href="${m.href}" class="nav-link ${m.key === activeMenuKey ? 'active' : ''}" ${m.isLogout ? 'onclick="openLogoutModal(event)"' : ''}>
+        <a href="${m.href}" class="nav-link ${m.key === activeMenuKey ? 'active' : ''} ${m.isLogout ? 'nav-link-logout' : ''}" ${m.isLogout ? 'onclick="openLogoutModal(event)"' : ''}>
           <span class="material-symbols-outlined">${m.icon}</span>
           <span>${m.label}</span>
         </a>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Katalog Buku — E-Library MTs Al-Falah Klender</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  <link rel="stylesheet" href="../css/user.css">
+</head>
+<body>
+  <header id="user-nav" class="user-nav"></header>
+
+  <main class="main">
+    <div class="stitch-page-heading"><h1>Katalog Koleksi Buku</h1><p>Jelajahi dan temukan seluruh buku digital & fisik madrasah terakreditasi</p></div>
+    <div class="catalog-console">
+      <div class="catalog-search"><span class="material-symbols-outlined">search</span><input type="text" id="search-book" class="form-input" placeholder="Cari judul buku..."></div>
+      <div class="catalog-filters">
+        <label>Kategori<select id="filter-category" class="form-select"><option value="">Semua Kategori</option></select></label>
+        <label>Mata Pelajaran<select id="filter-subject" class="form-select"><option value="">Semua Mapel</option></select></label>
+        <label>Tingkat Kelas<select id="filter-class" class="form-select"><option value="">Semua Kelas</option></select></label>
+        <label>Urutan<select id="filter-sort" class="form-select"><option value="title-asc">Judul A-Z</option><option value="title-desc">Judul Z-A</option><option value="year-newest">Tahun Terbaru</option><option value="year-oldest">Tahun Terlama</option></select></label>
+      </div>
+      <div class="catalog-status"><span id="catalog-count">Memuat...</span><button onclick="resetCatalogFilters()"><span class="material-symbols-outlined">restart_alt</span> Reset Filter</button></div>
+    </div>
+    <div id="catalog-grid" class="book-grid stitch-catalog-grid"></div>
+  </main>
+
+  <div id="user-toast"></div>
+
+  <script src="../js/user-common.js"></script>
+  <script src="../js/katalog.js"></script>
+</body>
+</html>

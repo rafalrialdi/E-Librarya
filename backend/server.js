@@ -12,9 +12,13 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Cache control 600 detik
+// Cache control 600 detik khusus GET, no-store untuk mutasi
 app.use((req, res, next) => {
-  res.set('Cache-Control', 'public, max-age=600');
+  if (req.method === 'GET') {
+    res.set('Cache-Control', 'public, max-age=600');
+  } else {
+    res.set('Cache-Control', 'no-store');
+  }
   next();
 });
 

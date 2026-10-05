@@ -5,7 +5,6 @@
 let allBuku = [];
 let allKategori = [];
 let allMapel = [];
-let allKelas = [];
 let bukuToDelete = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -16,10 +15,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 async function loadDropdownMaster() {
-  const [resKat, resMapel, resKelas] = await Promise.all([
+  const [resKat, resMapel] = await Promise.all([
     fetchAPI('/kategori-buku'),
-    fetchAPI('/mata-pelajaran'),
-    fetchAPI('/kategori-kelas')
+    fetchAPI('/mata-pelajaran')
   ]);
 
   if (resKat && resKat.success) {
@@ -40,13 +38,6 @@ async function loadDropdownMaster() {
     });
   }
 
-  if (resKelas && resKelas.success) {
-    allKelas = resKelas.data;
-    const formKelas = document.getElementById('id-kelas');
-    allKelas.forEach(kls => {
-      formKelas.innerHTML += `<option value="${kls.id}">Kelas ${kls.nama}</option>`;
-    });
-  }
 }
 
 async function loadBuku() {
@@ -70,24 +61,22 @@ function renderTable(data) {
   }
 
   tbody.innerHTML = data.map(item => `
-    <tr>
+    <tr data-buku-id="${item.id}">
       <td style="text-align: center;">
         <img src="${item.cover_url || '../../../assset/logosekolah.jpeg'}" alt="Cover" class="book-cover-cell">
       </td>
       <td>
         <strong style="color: var(--text-primary); font-size: 14px;">${item.judul}</strong>
         <div style="font-size: 11px; color: var(--text-secondary); margin-top: 2px;">
-          Penulis: ${item.penulis} ${item.tahun_terbit ? `(${item.tahun_terbit})` : ''} | ISBN: ${item.isbn || '-'}
+          Penulis: ${item.penulis} ${item.tahun_terbit ? `(${item.tahun_terbit})` : ''}
         </div>
       </td>
+      <td style="color: var(--text-primary); font-size: 12px;">${item.isbn || '-'}</td>
       <td>
-        <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: var(--primary); border: 1px solid rgba(245, 158, 11, 0.3);">
-          ${item.nama_kategori || 'Umum'}
-        </span>
-      </td>
-      <td>
-        <div style="font-size: 12px; color: var(--text-primary);">${item.nama_mata_pelajaran || '-'}</div>
-        <div style="font-size: 11px; color: var(--text-muted);">${item.nama_kelas ? `Kelas ${item.nama_kelas}` : 'Semua'}</div>
+        <div class="book-badge-stack">
+          <span class="badge book-category-badge">${item.nama_kategori || 'Umum'}</span>
+          <span class="badge book-class-badge">${item.tingkat_kelas ? `Kelas ${item.tingkat_kelas}` : 'Semua'}</span>
+        </div>
       </td>
       <td style="text-align: center;">
         <span style="font-weight: 700; color: ${item.stok_tersedia > 0 ? 'var(--tertiary)' : 'var(--error)'};">${item.stok_tersedia}</span>
@@ -142,6 +131,8 @@ function handlePdfSelect(input) {
 function openTambahModal() {
   document.getElementById('form-buku').reset();
   document.getElementById('buku-id').value = '';
+  document.getElementById('file-cover').value = '';
+  document.getElementById('file-pdf').value = '';
   document.getElementById('label-cover').innerText = 'Pilih cover (JPG/PNG)';
   document.getElementById('label-pdf').innerText = 'Pilih berkas PDF';
   document.getElementById('modal-title').innerHTML = `
@@ -153,23 +144,30 @@ function openTambahModal() {
 }
 
 async function openEditModal(id) {
-  const res = await fetchAPI(`/buku/${id}`);
-  if (!res || !res.success) {
-    showToast('Gagal memuat detail buku', 'error');
-    return;
+  document.getElementById('form-buku').reset();
+  document.getElementById('file-cover').value = '';
+  document.getElementById('file-pdf').value = '';
+
+  let b = allBuku.find(item => String(item.id) === String(id));
+  if (!b) {
+    const res = await fetchAPI(`/buku/${id}`);
+    if (!res || !res.success) {
+      showToast('Gagal memuat detail buku', 'error');
+      return;
+    }
+    b = res.data;
   }
 
-  const b = res.data;
   document.getElementById('buku-id').value = b.id;
-  document.getElementById('judul').value = b.judul;
-  document.getElementById('penulis').value = b.penulis;
+  document.getElementById('judul').value = b.judul || '';
+  document.getElementById('penulis').value = b.penulis || '';
   document.getElementById('penerbit').value = b.penerbit || '';
   document.getElementById('tahun-terbit').value = b.tahun_terbit || '';
   document.getElementById('isbn').value = b.isbn || '';
   document.getElementById('id-kategori').value = b.id_kategori || '';
   document.getElementById('id-mata-pelajaran').value = b.id_mata_pelajaran || '';
-  document.getElementById('id-kelas').value = b.id_kelas || '';
-  document.getElementById('stok-total').value = b.stok_total;
+  document.getElementById('tingkat-kelas').value = b.tingkat_kelas || '';
+  document.getElementById('stok-total').value = b.stok_total !== undefined ? b.stok_total : '';
   document.getElementById('deskripsi').value = b.deskripsi || '';
 
   document.getElementById('label-cover').innerText = b.cover_url ? 'Ganti Cover (sudah ada)' : 'Pilih cover (JPG/PNG)';
@@ -196,7 +194,7 @@ async function handleFormSubmit(e) {
   formData.append('isbn', document.getElementById('isbn').value.trim());
   formData.append('id_kategori', document.getElementById('id-kategori').value);
   formData.append('id_mata_pelajaran', document.getElementById('id-mata-pelajaran').value);
-  formData.append('id_kelas', document.getElementById('id-kelas').value);
+  formData.append('tingkat_kelas', document.getElementById('tingkat-kelas').value);
   formData.append('stok_total', document.getElementById('stok-total').value);
   formData.append('durasi_peminjaman', '7');
   formData.append('deskripsi', document.getElementById('deskripsi').value.trim());
@@ -208,7 +206,7 @@ async function handleFormSubmit(e) {
   if (filePdf) formData.append('pdf', filePdf);
 
   submitBtn.disabled = true;
-  submitBtn.innerText = 'Mengunggah & Menyimpan...';
+  submitBtn.innerText = id ? 'Memperbarui...' : 'Mengunggah & Menyimpan...';
 
   const endpoint = id ? `/buku/${id}` : '/buku';
   const method = id ? 'PUT' : 'POST';
@@ -224,7 +222,10 @@ async function handleFormSubmit(e) {
   if (res && res.success) {
     showToast(id ? 'Buku berhasil diperbarui' : 'Buku berhasil ditambahkan');
     closeModal('modal-form');
-    loadBuku();
+    document.getElementById('form-buku').reset();
+    document.getElementById('file-cover').value = '';
+    document.getElementById('file-pdf').value = '';
+    await loadBuku();
   } else {
     showToast(res ? res.message : 'Gagal menyimpan buku', 'error');
   }
@@ -239,13 +240,25 @@ function openHapusModal(id, judul) {
 
 async function executeHapus() {
   if (!bukuToDelete) return;
-  const res = await fetchAPI(`/buku/${bukuToDelete}`, { method: 'DELETE' });
+  const idYangDihapus = String(bukuToDelete);
+  const tombolHapus = document.getElementById('btn-konfirmasi-hapus');
+  tombolHapus.disabled = true;
+  tombolHapus.innerText = 'Menghapus...';
+  const res = await fetchAPI(`/buku/${idYangDihapus}`, { method: 'DELETE' });
   if (res && res.success) {
+    const row = document.querySelector(`tr[data-buku-id="${idYangDihapus}"]`);
+    if (row) {
+      row.classList.add('row-removing');
+      await new Promise(resolve => setTimeout(resolve, 300));
+    }
+    allBuku = allBuku.filter(item => String(item.id) !== idYangDihapus);
+    renderTable(allBuku);
     showToast('Buku berhasil dihapus');
     closeModal('modal-hapus');
-    loadBuku();
   } else {
     showToast(res ? res.message : 'Gagal menghapus buku', 'error');
   }
+  tombolHapus.disabled = false;
+  tombolHapus.innerText = 'Ya, Hapus';
   bukuToDelete = null;
 }

@@ -32,9 +32,9 @@ function renderTable(data) {
   }
 
   tbody.innerHTML = data.map((item, index) => `
-    <tr>
+    <tr data-kelas-id="${item.id}">
       <td style="text-align: center; color: var(--text-muted);">${index + 1}</td>
-      <td><strong style="color: var(--text-primary);">${item.nama}</strong></td>
+      <td><span class="table-value-badge">${item.nama}</span></td>
       <td><span class="badge" style="background: rgba(123, 208, 255, 0.15); color: var(--secondary); border: 1px solid rgba(123, 208, 255, 0.3);">Kelas ${item.tingkat}</span></td>
       <td style="color: var(--text-secondary);">${item.wali_kelas || '-'}</td>
       <td style="text-align: center;">
@@ -95,15 +95,20 @@ async function handleFormSubmit(e) {
   const endpoint = id ? `/kategori-kelas/${id}` : '/kategori-kelas';
   const method = id ? 'PUT' : 'POST';
 
+  const tombolSimpan = document.querySelector('#form-kelas button[type="submit"]');
+  tombolSimpan.disabled = true;
+  tombolSimpan.innerText = id ? 'Memperbarui...' : 'Menyimpan...';
   const res = await fetchAPI(endpoint, {
     method,
     body: JSON.stringify({ nama, tingkat, wali_kelas })
   });
+  tombolSimpan.disabled = false;
+  tombolSimpan.innerText = 'Simpan';
 
   if (res && res.success) {
     showToast(id ? 'Kelas berhasil diperbarui' : 'Kelas berhasil ditambahkan');
     closeModal('modal-form');
-    loadKelas();
+    await loadKelas();
   } else {
     showToast(res ? res.message : 'Gagal menyimpan kelas', 'error');
   }
@@ -118,13 +123,25 @@ function openHapusModal(id, nama) {
 
 async function executeHapus() {
   if (!kelasToDelete) return;
-  const res = await fetchAPI(`/kategori-kelas/${kelasToDelete}`, { method: 'DELETE' });
+  const idYangDihapus = String(kelasToDelete);
+  const tombolHapus = document.getElementById('btn-konfirmasi-hapus');
+  tombolHapus.disabled = true;
+  tombolHapus.innerText = 'Menghapus...';
+  const res = await fetchAPI(`/kategori-kelas/${idYangDihapus}`, { method: 'DELETE' });
   if (res && res.success) {
+    const row = document.querySelector(`tr[data-kelas-id="${idYangDihapus}"]`);
+    if (row) {
+      row.classList.add('row-removing');
+      await new Promise(resolve => setTimeout(resolve, 300));
+    }
+    allKelas = allKelas.filter(item => String(item.id) !== idYangDihapus);
+    renderTable(allKelas);
     showToast('Kelas berhasil dihapus');
     closeModal('modal-hapus');
-    loadKelas();
   } else {
     showToast(res ? res.message : 'Gagal menghapus kelas', 'error');
   }
+  tombolHapus.disabled = false;
+  tombolHapus.innerText = 'Ya, Hapus';
   kelasToDelete = null;
 }

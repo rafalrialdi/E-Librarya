@@ -32,9 +32,9 @@ function renderTable(data) {
   }
 
   tbody.innerHTML = data.map((item, index) => `
-    <tr>
+    <tr data-kategori-id="${item.id}">
       <td style="text-align: center; color: var(--text-muted);">${index + 1}</td>
-      <td><strong style="color: var(--text-primary);">${item.nama}</strong></td>
+      <td><span class="table-value-badge">${item.nama}</span></td>
       <td style="color: var(--text-secondary);">${formatDate(item.created_at)}</td>
       <td style="text-align: center;">
         <button class="btn btn-secondary btn-icon" title="Edit" onclick="openEditModal(${item.id}, '${item.nama}')">
@@ -87,15 +87,20 @@ async function handleFormSubmit(e) {
   const endpoint = id ? `/kategori-buku/${id}` : '/kategori-buku';
   const method = id ? 'PUT' : 'POST';
 
+  const tombolSimpan = document.querySelector('#form-kategori button[type="submit"]');
+  tombolSimpan.disabled = true;
+  tombolSimpan.innerText = id ? 'Memperbarui...' : 'Menyimpan...';
   const res = await fetchAPI(endpoint, {
     method,
     body: JSON.stringify({ nama })
   });
+  tombolSimpan.disabled = false;
+  tombolSimpan.innerText = 'Simpan';
 
   if (res && res.success) {
     showToast(id ? 'Kategori berhasil diperbarui' : 'Kategori berhasil ditambahkan');
     closeModal('modal-form');
-    loadKategori();
+    await loadKategori();
   } else {
     showToast(res ? res.message : 'Gagal menyimpan kategori', 'error');
   }
@@ -110,13 +115,25 @@ function openHapusModal(id, nama) {
 
 async function executeHapus() {
   if (!kategoriToDelete) return;
-  const res = await fetchAPI(`/kategori-buku/${kategoriToDelete}`, { method: 'DELETE' });
+  const idYangDihapus = String(kategoriToDelete);
+  const tombolHapus = document.getElementById('btn-konfirmasi-hapus');
+  tombolHapus.disabled = true;
+  tombolHapus.innerText = 'Menghapus...';
+  const res = await fetchAPI(`/kategori-buku/${idYangDihapus}`, { method: 'DELETE' });
   if (res && res.success) {
+    const row = document.querySelector(`tr[data-kategori-id="${idYangDihapus}"]`);
+    if (row) {
+      row.classList.add('row-removing');
+      await new Promise(resolve => setTimeout(resolve, 300));
+    }
+    allKategori = allKategori.filter(item => String(item.id) !== idYangDihapus);
+    renderTable(allKategori);
     showToast('Kategori berhasil dihapus');
     closeModal('modal-hapus');
-    loadKategori();
   } else {
     showToast(res ? res.message : 'Gagal menghapus kategori', 'error');
   }
+  tombolHapus.disabled = false;
+  tombolHapus.innerText = 'Ya, Hapus';
   kategoriToDelete = null;
 }

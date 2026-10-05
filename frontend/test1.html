@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — E-Library Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+  <link rel="stylesheet" href="test1.css">
+  <link rel="stylesheet" href="test1.css">
+  <link rel="stylesheet" href="test1.css">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <img src="../../assset/logosekolah.jpeg" alt="Logo" class="sidebar-logo">
+        <div class="sidebar-brand">
+          <span class="brand-name">E-Library</span>
+          <span class="brand-sub">MTs Al-Falah Klender</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-item active">
+          <span class="material-symbols-outlined">dashboard</span>
+          <span>Dashboard</span>
+        </a>
+        <a href="manajemen-pengguna.html" class="nav-item">
+          <span class="material-symbols-outlined">group</span>
+          <span>Manajemen Pengguna</span>
+        </a>
+        <a href="manajemen-buku.html" class="nav-item">
+          <span class="material-symbols-outlined">menu_book</span>
+          <span>Manajemen Buku</span>
+        </a>
+        <a href="kategori-buku.html" class="nav-item">
+          <span class="material-symbols-outlined">category</span>
+          <span>Kategori Buku</span>
+        </a>
+        <a href="kategori-kelas.html" class="nav-item">
+          <span class="material-symbols-outlined">school</span>
+          <span>Kategori Kelas</span>
+        </a>
+        <a href="mata-pelajaran.html" class="nav-item">
+          <span class="material-symbols-outlined">book</span>
+          <span>Mata Pelajaran</span>
+        </a>
+        <a href="peminjaman.html" class="nav-item">
+          <span class="material-symbols-outlined">library_books</span>
+          <span>Peminjaman</span>
+        </a>
+        <a href="profil.html" class="nav-item">
+          <span class="material-symbols-outlined">manage_accounts</span>
+          <span>Profil</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="btn-logout" onclick="logout()">
+          <span class="material-symbols-outlined">logout</span>
+          <span>Keluar</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Header -->
+      <header class="page-header">
+        <div class="header-left">
+          <button class="btn-toggle-sidebar" onclick="toggleSidebar()">
+            <span class="material-symbols-outlined">menu</span>
+          </button>
+          <div>
+            <h1 class="page-title">Dashboard</h1>
+            <p class="page-subtitle">Selamat datang, <span id="nama-admin">Admin</span></p>
+          </div>
+        </div>
+        <div class="header-right">
+          <span class="badge-online">
+            <span class="dot-online"></span> SISTEM ONLINE
+          </span>
+        </div>
+      </header>
+
+      <!-- Statistik Cards -->
+      <section class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon" style="background: rgba(245,158,11,0.15);">
+            <span class="material-symbols-outlined" style="color:#f59e0b;">menu_book</span>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Total Buku</span>
+            <span class="stat-value" id="total-buku">—</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: rgba(59,130,246,0.15);">
+            <span class="material-symbols-outlined" style="color:#3b82f6;">group</span>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Total Siswa</span>
+            <span class="stat-value" id="total-siswa">—</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: rgba(16,185,129,0.15);">
+            <span class="material-symbols-outlined" style="color:#10b981;">person</span>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Total Guru</span>
+            <span class="stat-value" id="total-guru">—</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: rgba(239,68,68,0.15);">
+            <span class="material-symbols-outlined" style="color:#ef4444;">pending</span>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Menunggu Persetujuan</span>
+            <span class="stat-value" id="total-menunggu">—</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: rgba(16,185,129,0.15);">
+            <span class="material-symbols-outlined" style="color:#10b981;">check_circle</span>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Dipinjam</span>
+            <span class="stat-value" id="total-disetujui">—</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: rgba(139,92,246,0.15);">
+            <span class="material-symbols-outlined" style="color:#8b5cf6;">assignment_return</span>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Dikembalikan</span>
+            <span class="stat-value" id="total-dikembalikan">—</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tabel & Buku Terbaru -->
+      <section class="content-grid">
+        <!-- Peminjaman Terbaru -->
+        <div class="content-card">
+          <div class="card-header">
+            <h2 class="card-title">Peminjaman Terbaru</h2>
+            <a href="peminjaman.html" class="card-link">Lihat semua</a>
+          </div>
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Pengguna</th>
+                  <th>Buku</th>
+                  <th>Tgl Pinjam</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-peminjaman">
+                <tr><td colspan="4" class="text-center">Memuat data...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Buku Terbaru -->
+        <div class="content-card">
+          <div class="card-header">
+            <h2 class="card-title">Buku Terbaru</h2>
+            <a href="manajemen-buku.html" class="card-link">Lihat semua</a>
+          </div>
+          <div id="list-buku-terbaru" class="buku-list">
+            <p class="text-center">Memuat data...</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="../js/dashboard.js"></script>
+</body>
+</html>

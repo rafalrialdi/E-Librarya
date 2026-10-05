@@ -32,13 +32,13 @@ function renderTable(data) {
   }
 
   tbody.innerHTML = data.map((item, index) => `
-    <tr>
+    <tr data-mapel-id="${item.id}">
       <td style="text-align: center; color: var(--text-muted);">${index + 1}</td>
-      <td><strong style="color: var(--text-primary);">${item.nama}</strong></td>
+      <td><span class="table-value-badge">${item.nama}</span></td>
       <td>
         ${item.kelompok ? `<span class="badge" style="background: rgba(245, 158, 11, 0.15); color: var(--primary); border: 1px solid rgba(245, 158, 11, 0.3);">${item.kelompok}</span>` : '-'}
       </td>
-      <td style="color: var(--secondary); font-family: monospace;">${item.kode || '-'}</td>
+      <td style="color: var(--text-primary);">${item.kode || '-'}</td>
       <td style="color: var(--text-secondary);">${item.tingkat_kelas || 'Semua'}</td>
       <td style="text-align: center;">
         <button class="btn btn-secondary btn-icon" title="Edit" onclick="openEditModal(${item.id}, '${item.nama}', '${item.kelompok || ''}', '${item.kode || ''}', '${item.tingkat_kelas || ''}')">
@@ -101,15 +101,20 @@ async function handleFormSubmit(e) {
   const endpoint = id ? `/mata-pelajaran/${id}` : '/mata-pelajaran';
   const method = id ? 'PUT' : 'POST';
 
+  const tombolSimpan = document.querySelector('#form-mapel button[type="submit"]');
+  tombolSimpan.disabled = true;
+  tombolSimpan.innerText = id ? 'Memperbarui...' : 'Menyimpan...';
   const res = await fetchAPI(endpoint, {
     method,
     body: JSON.stringify({ nama, kelompok, kode, tingkat_kelas })
   });
+  tombolSimpan.disabled = false;
+  tombolSimpan.innerText = 'Simpan';
 
   if (res && res.success) {
     showToast(id ? 'Mata pelajaran berhasil diperbarui' : 'Mata pelajaran berhasil ditambahkan');
     closeModal('modal-form');
-    loadMapel();
+    await loadMapel();
   } else {
     showToast(res ? res.message : 'Gagal menyimpan mata pelajaran', 'error');
   }
@@ -124,13 +129,25 @@ function openHapusModal(id, nama) {
 
 async function executeHapus() {
   if (!mapelToDelete) return;
-  const res = await fetchAPI(`/mata-pelajaran/${mapelToDelete}`, { method: 'DELETE' });
+  const idYangDihapus = String(mapelToDelete);
+  const tombolHapus = document.getElementById('btn-konfirmasi-hapus');
+  tombolHapus.disabled = true;
+  tombolHapus.innerText = 'Menghapus...';
+  const res = await fetchAPI(`/mata-pelajaran/${idYangDihapus}`, { method: 'DELETE' });
   if (res && res.success) {
+    const row = document.querySelector(`tr[data-mapel-id="${idYangDihapus}"]`);
+    if (row) {
+      row.classList.add('row-removing');
+      await new Promise(resolve => setTimeout(resolve, 300));
+    }
+    allMapel = allMapel.filter(item => String(item.id) !== idYangDihapus);
+    renderTable(allMapel);
     showToast('Mata pelajaran berhasil dihapus');
     closeModal('modal-hapus');
-    loadMapel();
   } else {
     showToast(res ? res.message : 'Gagal menghapus mata pelajaran', 'error');
   }
+  tombolHapus.disabled = false;
+  tombolHapus.innerText = 'Ya, Hapus';
   mapelToDelete = null;
 }

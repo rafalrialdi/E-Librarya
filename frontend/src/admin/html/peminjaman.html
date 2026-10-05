@@ -23,12 +23,49 @@
     .indicator-green { background-color: var(--tertiary); }
     .indicator-blue { background-color: var(--secondary); }
 
-    .cards-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 16px;
+    .cards-section {
+      position: relative;
       margin-bottom: 36px;
     }
+
+    .cards-grid {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-behavior: smooth;
+      padding: 2px 2px 12px;
+      scrollbar-width: thin;
+    }
+
+    .cards-grid .loan-card {
+      flex: 0 0 320px;
+    }
+
+    .carousel-controls {
+      display: flex;
+      gap: 6px;
+      margin-left: auto;
+    }
+
+    .carousel-button {
+      width: 32px;
+      height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border-default);
+      border-radius: 8px;
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+
+    .carousel-button:hover {
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+
 
     .loan-card {
       background-color: var(--bg-card);
@@ -120,10 +157,12 @@
         <!-- Seksi 1: Request Peminjaman (Menunggu) -->
         <div class="section-header">
           <span class="section-indicator indicator-yellow"></span>
-          <h3 style="font-size: 16px; font-weight: 700; color: var(--text-primary);">
-            Permintaan Peminjaman (Menunggu Persetujuan)
-          </h3>
+          <h3 style="font-size: 16px; font-weight: 700; color: var(--text-primary);">Permintaan Peminjaman (Menunggu Persetujuan)</h3>
           <span id="badge-count-request" class="badge badge-pending">0 Request</span>
+          <div class="carousel-controls">
+            <button class="carousel-button" type="button" onclick="scrollCards('grid-request', -1)"><span class="material-symbols-outlined">chevron_left</span></button>
+            <button class="carousel-button" type="button" onclick="scrollCards('grid-request', 1)"><span class="material-symbols-outlined">chevron_right</span></button>
+          </div>
         </div>
         <div id="grid-request" class="cards-grid">
           <p style="color: var(--text-muted); padding: 16px;">Memuat permintaan peminjaman...</p>
@@ -132,10 +171,12 @@
         <!-- Seksi 2: Peminjaman Aktif (Disetujui) -->
         <div class="section-header">
           <span class="section-indicator indicator-green"></span>
-          <h3 style="font-size: 16px; font-weight: 700; color: var(--text-primary);">
-            Buku Sedang Dipinjam (Aktif)
-          </h3>
+          <h3 style="font-size: 16px; font-weight: 700; color: var(--text-primary);">Buku Sedang Dipinjam (Aktif)</h3>
           <span id="badge-count-aktif" class="badge badge-approved">0 Aktif</span>
+          <div class="carousel-controls">
+            <button class="carousel-button" type="button" onclick="scrollCards('grid-aktif', -1)"><span class="material-symbols-outlined">chevron_left</span></button>
+            <button class="carousel-button" type="button" onclick="scrollCards('grid-aktif', 1)"><span class="material-symbols-outlined">chevron_right</span></button>
+          </div>
         </div>
         <div id="grid-aktif" class="cards-grid">
           <p style="color: var(--text-muted); padding: 16px;">Memuat buku yang sedang dipinjam...</p>

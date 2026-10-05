@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Beranda — E-Library MTs Al-Falah Klender</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  <link rel="stylesheet" href="../css/user.css">
+  <style>
+    html, body { width: 100%; height: 900px; overflow: hidden; }
+    body { min-height: 900px; }
+    .user-nav, .nav-inner { height: 56px; }
+    .user-nav { padding: 0 32px; }
+    .brand img { width: 34px; height: 34px; }
+    .brand strong { font-size: 14px; }
+    .brand small { font-size: 10px; }
+    .nav-links { gap: 28px; }
+    .nav-links a { font-size: 13px; }
+    .icon-button { width: 34px; height: 34px; }
+    .profile-trigger { padding: 4px 10px; }
+    .profile-trigger img { width: 28px; height: 28px; }
+    .main { height: 804px; max-width: none; padding: 16px 32px; overflow: hidden; }
+    .stitch-hero { height: 130px; padding: 12px 16px; }
+    .hero-tag { padding: 4px 12px; font-size: 11px; }
+    .stitch-hero h1 { margin-top: 6px; font-size: 28px; }
+    .stitch-hero > p { margin: 4px auto 8px; font-size: 13px; white-space: nowrap; }
+    .hero-search { max-width: 690px; position: relative; }
+    .hero-search > span { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); z-index: 2; margin: 0; color: #f59e0b; pointer-events: none; }
+    .hero-search input { height: 36px; padding-left: 42px; }
+    .hero-search .btn { height: 36px; }
+    .hero-search input::placeholder { color: #94a3b8; opacity: 1; }
+    .dashboard-section { margin-top: 16px; }
+    .stitch-section-heading { height: 31px; padding-bottom: 6px; margin-bottom: 8px; align-items: start; }
+    .stitch-section-heading h2 { font-size: 16px; line-height: 18px; }
+    .stitch-section-heading p { display: inline; margin-left: 8px; font-size: 11px; }
+    .rail-controls button { width: 28px; height: 28px; }
+    .stitch-book-rail { height: 195px; gap: 12px; }
+    .stitch-book-card { width: 210px; height: 195px; flex-basis: 210px; padding: 8px; display: grid; grid-template-columns: 100px 1fr; grid-template-rows: 1fr auto; column-gap: 8px; }
+    .stitch-book-card .stitch-cover { width: 100px; height: 135px; grid-row: 1 / 3; }
+    .stitch-book-info { padding: 0; min-width: 0; }
+    .stitch-book-info h3 { font-size: 14px; line-height: 17px; white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    .stitch-book-info p { font-size: 11px; }
+    .stitch-card-actions { grid-column: 2; flex-direction: row; gap: 4px; padding: 0; border: 0; }
+    .stitch-card-actions .btn { height: 28px; padding: 0 5px; font-size: 9px; white-space: nowrap; }
+    .stitch-loan-rail { height: 80px; gap: 12px; }
+    .stitch-loan-card { width: calc((100vw - 88px) / 3); height: 80px; flex-basis: calc((100vw - 88px) / 3); padding: 8px; gap: 10px; }
+    .stitch-loan-card > img { width: 48px; height: 64px; }
+    .stitch-loan-card h3 { margin: 3px 0; font-size: 12px; }
+    .stitch-loan-card dl { font-size: 10px; }
+    .stitch-history-rail { height: 145px; gap: 12px; }
+    .stitch-history-card { width: calc((100vw - 100px) / 4); height: 145px; flex-basis: calc((100vw - 100px) / 4); padding: 8px; display: grid; grid-template-columns: 70px 1fr; grid-template-rows: 1fr auto; gap: 8px; }
+    .stitch-history-card > .stitch-cover { width: 70px; height: 95px; grid-row: 1 / 3; margin: 0; }
+    .stitch-history-card h3 { font-size: 12px; white-space: normal; line-height: 15px; }
+    .stitch-history-card p { font-size: 10px; }
+    .stitch-section-heading p { max-width: 680px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .stitch-history-card .stitch-card-actions { grid-column: 2; }
+    .user-footer { display: block; height: 40px; padding: 7px 32px; }
+    .user-footer-inner { display: block; white-space: nowrap; }
+    .user-footer strong, .user-footer span { font-size: 11px; }
+
+    /* Default State Stitch reference */
+    html, body { height: auto; min-height: 100%; overflow-x: hidden; overflow-y: auto; }
+    body { min-height: 100vh; }
+    .user-nav, .nav-inner { height: 64px; }
+    .user-nav { padding: 0 32px; }
+    .brand img { width: 40px; height: 40px; }
+    .brand strong { font-size: 15px; }
+    .brand small { font-size: 11px; }
+    .nav-links { gap: 32px; }
+    .nav-links a { font-size: 14px; }
+    .icon-button { width: 40px; height: 40px; }
+    .profile-trigger { padding: 6px 12px; }
+    .profile-trigger img { width: 32px; height: 32px; }
+    .main { height: auto; max-width: 1280px; padding: 32px 32px 40px; overflow: visible; }
+    .stitch-hero { height: auto; min-height: 280px; padding: 32px; position: relative; overflow: hidden; background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .10); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 18px 45px rgba(0,0,0,.24); }
+    .stitch-hero::before { content: ''; position: absolute; top: -150px; right: -100px; width: 360px; height: 360px; border-radius: 50%; background: radial-gradient(circle, rgba(245,158,11,.15) 0%, rgba(245,158,11,.07) 38%, transparent 72%); pointer-events: none; }
+    .stitch-hero { background-image: radial-gradient(circle at 8% 92%, rgba(245,158,11,.15) 0%, rgba(245,158,11,.07) 22%, transparent 48%); }
+    .stitch-hero::after { content: ''; position: absolute; inset: 0 0 auto; height: 2px; background: linear-gradient(90deg, transparent, rgba(255,255,255,.20), transparent); pointer-events: none; }
+    .stitch-hero > * { position: relative; z-index: 1; }
+    .hero-tag { padding: 6px 16px; font-size: 13px; }
+    .stitch-hero h1 { margin-top: 16px; font-size: 32px; }
+    .stitch-hero > p { margin: 14px auto 18px; font-size: 14px; white-space: normal; }
+    .hero-search { max-width: 680px; }
+    .hero-search input, .hero-search .btn { height: 44px; }
+    .dashboard-section { margin-top: 40px; }
+    .stitch-section-heading { height: auto; padding-bottom: 14px; margin-bottom: 16px; }
+    .stitch-section-heading h2 { font-size: 18px; }
+    .stitch-section-heading p { display: block; margin: 2px 0 0; max-width: none; font-size: 13px; white-space: normal; }
+    .rail-controls button { width: 36px; height: 36px; }
+    .stitch-book-rail { height: auto; gap: 16px; }
+    .stitch-book-card { width: 210px; height: auto; min-height: 430px; flex-basis: 210px; padding: 12px; display: flex; }
+    .stitch-book-card .stitch-cover { width: 100%; height: auto; aspect-ratio: 3 / 4; }
+    .stitch-book-info { padding: 10px 0; }
+    .stitch-book-info h3 { font-size: 15px; line-height: 20px; display: block; white-space: nowrap; }
+    .stitch-book-info p { font-size: 11px; }
+    .stitch-card-actions { grid-column: auto; flex-direction: column; gap: 8px; padding-top: 10px; border-top: 1px solid #2d3f52; }
+    .stitch-card-actions .btn { height: 36px; padding: 0 8px; font-size: 12px; }
+    .stitch-loan-rail { height: auto; gap: 16px; }
+    .stitch-loan-card { width: 340px; height: auto; min-height: 130px; flex-basis: 340px; padding: 16px; gap: 16px; }
+    .stitch-loan-card > img { width: 80px; height: 106px; }
+    .stitch-loan-card h3 { margin: 6px 0 10px; font-size: 15px; }
+    .stitch-loan-card dl { font-size: 11px; }
+    .stitch-history-rail { height: auto; gap: 16px; }
+    .stitch-history-card { width: 230px; height: auto; min-height: 440px; flex-basis: 230px; padding: 12px; display: flex; }
+    .stitch-history-card > .stitch-cover { width: 100%; height: auto; aspect-ratio: 3 / 4; margin-bottom: 10px; }
+    .stitch-history-card h3 { font-size: 15px; line-height: 20px; white-space: nowrap; }
+    .stitch-history-card p { font-size: 11px; }
+    .stitch-history-card .stitch-card-actions { grid-column: auto; }
+    .stitch-history-card { display: flex; flex-direction: column; align-items: stretch; justify-content: space-between; }
+    .stitch-history-card > .stitch-cover { flex: 0 0 auto; width: 100%; height: auto; aspect-ratio: 3 / 4; }
+    .stitch-history-card h3, .stitch-history-card p { flex: 0 0 auto; }
+    .stitch-history-card .stitch-card-actions { display: flex; flex-direction: column; margin-top: auto; }
+    .user-footer { display: block; height: auto; padding: 24px 32px; }
+    .user-footer-inner { display: flex; white-space: normal; }
+    .user-footer strong, .user-footer span { font-size: 11px; }
+
+    /* Revisi visual: kaca gelap, section accents, cards compact */
+    .profile-trigger, .profile-menu { background: #131b26; }
+    .stitch-book-card, .stitch-history-card, .stitch-loan-card { background: rgba(39, 54, 71, .78); border-color: rgba(123, 208, 255, .20); box-shadow: 0 8px 18px rgba(0,0,0,.16); }
+    .stitch-book-card { width: 190px; flex-basis: 190px; min-height: 392px; padding: 10px; }
+    .stitch-book-card .stitch-cover { aspect-ratio: 3 / 4; }
+    .stitch-history-card { width: 190px; flex-basis: 190px; min-height: 392px; padding: 10px; }
+    .stitch-loan-card { background: rgba(39, 54, 71, .78); }
+    .stitch-section:nth-of-type(3) .stitch-section-heading > div:first-child { border-left-color: #00a6e0; }
+    .stitch-section:nth-of-type(4) .stitch-section-heading > div:first-child { border-left-color: #22c55e; }
+    .stitch-card-actions .btn-secondary { background: rgba(42, 56, 72, .72); }
+    .stitch-history-card .stitch-card-actions { border-top-color: rgba(123, 208, 255, .16); }
+    .stitch-book-card, .stitch-loan-card, .stitch-history-card { position: relative; overflow: hidden; background: linear-gradient(145deg, rgba(45, 63, 82, .82), rgba(31, 45, 61, .76)); border: 1px solid rgba(123, 208, 255, .26); box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 10px 24px rgba(0,0,0,.20); }
+    .stitch-book-card::before, .stitch-loan-card::before, .stitch-history-card::before { content: ''; position: absolute; inset: 0 0 auto; height: 1px; background: linear-gradient(90deg, transparent, rgba(123,208,255,.48), transparent); pointer-events: none; }
+    .loans-section .stitch-section-heading > div:first-child { border-left-color: #00a6e0 !important; }
+    .history-section .stitch-section-heading > div:first-child { border-left-color: #22c55e !important; }
+  </style>
+</head>
+<body>
+  <header id="user-nav" class="user-nav"></header>
+
+  <main class="main">
+    <section class="stitch-hero">
+      <div class="hero-tag"><span class="material-symbols-outlined">menu_book</span> Katalog Akademik Digital MTs Al-Falah Klender</div>
+      <h1>Selamat Datang, <span id="welcome-name">Pembaca</span></h1>
+      <p>Akses buku teks pelajaran kurikulum madrasah, pantau sirkulasi peminjaman aktif, dan unduh buku pembelajaran resmi MTs Al-Falah Klender.</p>
+      <form class="hero-search" onsubmit="event.preventDefault(); window.location.href = 'katalog.html?q=' + encodeURIComponent(document.getElementById('dashboard-search').value);">
+        <span class="material-symbols-outlined">search</span>
+        <input id="dashboard-search" type="search" placeholder="Cari judul buku, penulis, atau mata pelajaran...">
+        <button type="submit" class="btn btn-primary">Cari Buku</button>
+      </form>
+    </section>
+
+    <section class="dashboard-section stitch-section">
+      <div class="stitch-section-heading"><div><h2>Daftar Buku</h2><p>Koleksi lengkap buku teks dan referensi kurikulum madrasah untuk kegiatan belajar mengajar</p></div><div class="rail-controls"><button aria-label="Sebelumnya" onclick="document.getElementById('latest-books').scrollBy({left:-260,behavior:'smooth'})"><span class="material-symbols-outlined">chevron_left</span></button><button aria-label="Selanjutnya" onclick="document.getElementById('latest-books').scrollBy({left:260,behavior:'smooth'})"><span class="material-symbols-outlined">chevron_right</span></button></div></div>
+      <div id="latest-books" class="stitch-book-rail"></div>
+    </section>
+
+    <section class="dashboard-section stitch-section loans-section">
+      <div class="stitch-section-heading"><div><h2>Peminjaman Saya</h2><p>Status sirkulasi buku fisik yang sedang aktif dipinjam</p></div><div class="rail-controls"><button aria-label="Sebelumnya" onclick="document.getElementById('recent-loans').scrollBy({left:-340,behavior:'smooth'})"><span class="material-symbols-outlined">chevron_left</span></button><button aria-label="Selanjutnya" onclick="document.getElementById('recent-loans').scrollBy({left:340,behavior:'smooth'})"><span class="material-symbols-outlined">chevron_right</span></button></div></div>
+      <div id="recent-loans" class="stitch-loan-rail"></div>
+    </section>
+
+    <section class="dashboard-section stitch-section history-section">
+      <div class="stitch-section-heading"><div><h2>Riwayat Membaca</h2><p>Daftar buku digital yang terakhir kali Anda baca pada sistem e-library</p></div><div class="rail-controls"><button aria-label="Sebelumnya" onclick="document.getElementById('reading-history').scrollBy({left:-280,behavior:'smooth'})"><span class="material-symbols-outlined">chevron_left</span></button><button aria-label="Selanjutnya" onclick="document.getElementById('reading-history').scrollBy({left:280,behavior:'smooth'})"><span class="material-symbols-outlined">chevron_right</span></button></div></div>
+      <div id="reading-history" class="stitch-history-rail"></div>
+    </section>
+  </main>
+
+  <div id="user-toast"></div>
+
+  <script src="../js/user-common.js"></script>
+  <script src="../js/dashboard.js"></script>
+</body>
+</html>

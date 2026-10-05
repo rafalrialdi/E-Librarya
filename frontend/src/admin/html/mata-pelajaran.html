@@ -33,7 +33,7 @@
         <!-- Tabel Data -->
         <div class="table-card">
           <div class="table-responsive">
-            <table class="data-table">
+            <table class="data-table master-mapel-table">
               <thead>
                 <tr>
                   <th style="width: 60px; text-align: center;">No</th>
@@ -93,7 +93,12 @@
           </div>
           <div class="form-group">
             <label class="form-label" for="tingkat-kelas">Tingkat Kelas</label>
-            <input type="text" id="tingkat-kelas" class="form-control" placeholder="Contoh: VII, VIII, IX, atau Semua">
+            <select id="tingkat-kelas" class="form-control">
+              <option value="">Semua Tingkat</option>
+              <option value="VII">Kelas VII</option>
+              <option value="VIII">Kelas VIII</option>
+              <option value="IX">Kelas IX</option>
+            </select>
           </div>
         </div>
         <div class="modal-footer">

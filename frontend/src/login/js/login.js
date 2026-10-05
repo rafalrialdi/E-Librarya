@@ -121,6 +121,8 @@ async function handleLoginPengguna(e) {
     localStorage.setItem('role',  data.data.role);
     localStorage.setItem('nama',  data.data.nama);
     localStorage.setItem('id',    data.data.id);
+    localStorage.setItem('identifier', data.data.identifier || nisNip);
+    localStorage.setItem('email', data.data.email || '');
 
     // Redirect ke dashboard pengguna
     window.location.href = '../../pengguna/html/dashboard.html';

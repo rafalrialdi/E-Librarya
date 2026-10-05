@@ -26,14 +26,28 @@ async function loadAdminProfile() {
   }
 }
 
+function toggleProfilePassword(inputId, button) {
+  const input = document.getElementById(inputId);
+  const icon = button.querySelector('.material-symbols-outlined');
+  const visible = input.type === 'text';
+  input.type = visible ? 'password' : 'text';
+  icon.textContent = visible ? 'visibility' : 'visibility_off';
+}
+
 async function handleGantiPassword(e) {
   e.preventDefault();
+  const pwdLama = document.getElementById('password-lama').value;
   const pwdBaru = document.getElementById('password-baru').value;
   const pwdKonf = document.getElementById('password-konfirmasi').value;
   const btn = document.getElementById('btn-submit-pwd');
 
-  if (pwdBaru.length < 6) {
-    showToast('Kata sandi baru minimal 6 karakter', 'error');
+  if (!pwdLama) {
+    showToast('Kata sandi lama wajib diisi', 'error');
+    return;
+  }
+
+  if (pwdBaru.length < 8 || !/[A-Za-z]/.test(pwdBaru) || !/[0-9]/.test(pwdBaru)) {
+    showToast('Kata sandi baru minimal 8 karakter dan harus mengandung huruf serta angka', 'error');
     return;
   }
 
@@ -67,6 +81,7 @@ async function handleGantiPassword(e) {
       identifier: currentAdmin.identifier,
       email: currentAdmin.email,
       status_aktif: currentAdmin.status_aktif,
+      current_password: pwdLama,
       password: pwdBaru
     })
   });

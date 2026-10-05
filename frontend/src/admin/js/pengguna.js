@@ -131,13 +131,16 @@ function openTambahModal() {
 }
 
 async function openEditModal(id) {
-  const res = await fetchAPI(`/pengguna/${id}`);
-  if (!res || !res.success) {
-    showToast('Gagal memuat pengguna', 'error');
-    return;
+  let p = allPengguna.find(item => String(item.id) === String(id));
+  if (!p) {
+    const res = await fetchAPI(`/pengguna/${id}`);
+    if (!res || !res.success) {
+      showToast('Gagal memuat pengguna', 'error');
+      return;
+    }
+    p = res.data;
   }
 
-  const p = res.data;
   document.getElementById('pengguna-id').value = p.id;
   document.getElementById('nama').value = p.nama;
   document.getElementById('role').value = p.role;
@@ -193,15 +196,22 @@ async function handleFormSubmit(e) {
   const endpoint = id ? `/pengguna/${id}` : '/pengguna';
   const method = id ? 'PUT' : 'POST';
 
+  const submitBtn = document.getElementById('btn-submit-pengguna');
+  submitBtn.disabled = true;
+  submitBtn.innerText = id ? 'Memperbarui...' : 'Menyimpan...';
+
   const res = await fetchAPI(endpoint, {
     method,
     body: JSON.stringify(payload)
   });
 
+  submitBtn.disabled = false;
+  submitBtn.innerText = id ? 'Simpan Perubahan' : 'Simpan Pengguna';
+
   if (res && res.success) {
     showToast(id ? 'Pengguna berhasil diperbarui' : 'Pengguna berhasil ditambahkan');
     closeModal('modal-form');
-    loadPengguna();
+    await loadPengguna();
   } else {
     showToast(res ? res.message : 'Gagal menyimpan pengguna', 'error');
   }

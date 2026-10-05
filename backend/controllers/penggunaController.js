@@ -76,12 +76,24 @@ const createPengguna = async (req, res) => {
 const updatePengguna = async (req, res) => {
   try {
     const { id } = req.params;
-    const { nama, identifier, password, role, email, id_kelas, status_aktif } = req.body;
+    const { nama, identifier, password, current_password, role, email, id_kelas, status_aktif } = req.body;
 
-    // Cek pengguna ada
-    const [existing] = await pool.query('SELECT id FROM pengguna WHERE id = ?', [id]);
+    const [existing] = await pool.query('SELECT id, password FROM pengguna WHERE id = ?', [id]);
     if (existing.length === 0) {
       return res.status(404).json({ success: false, message: 'Pengguna tidak ditemukan' });
+    }
+
+    if (password) {
+      if (!current_password) {
+        return res.status(400).json({ success: false, message: 'Kata sandi lama wajib diisi' });
+      }
+      if (password.length < 8 || !/[A-Za-z]/.test(password) || !/[0-9]/.test(password)) {
+        return res.status(400).json({ success: false, message: 'Kata sandi baru minimal 8 karakter dan harus mengandung huruf serta angka' });
+      }
+      const validPassword = await bcrypt.compare(current_password, existing[0].password);
+      if (!validPassword) {
+        return res.status(400).json({ success: false, message: 'Kata sandi lama tidak sesuai' });
+      }
     }
 
     // Cek identifier sudah dipakai pengguna lain
@@ -133,4 +145,62 @@ const deletePengguna = async (req, res) => {
   }
 };
 
-module.exports = { getAllPengguna, getPenggunaById, createPengguna, updatePengguna, deletePengguna };
+// GET profil pribadi (untuk user yang login)
+const getProfilSaya = async (req, res) => {
+  try {
+    const [rows] = await pool.query(`
+      SELECT p.id, p.nama, p.identifier, p.role, p.email,
+             p.foto_url, p.status_aktif, p.id_kelas,
+             k.nama as nama_kelas
+      FROM pengguna p
+      LEFT JOIN kategori_kelas k ON p.id_kelas = k.id
+      WHERE p.id = ?
+    `, [req.user.id]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Profil tidak ditemukan' });
+    }
+
+    res.json({ success: true, data: rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Terjadi kesalahan server' });
+  }
+};
+
+// PUT profil pribadi (update nama/email/password)
+const updateProfilSaya = async (req, res) => {
+  try {
+    const { nama, email, password, current_password } = req.body;
+
+    if (password) {
+      if (!current_password) {
+        return res.status(400).json({ success: false, message: 'Kata sandi lama wajib diisi' });
+      }
+      if (password.length < 8 || !/[A-Za-z]/.test(password) || !/[0-9]/.test(password)) {
+        return res.status(400).json({ success: false, message: 'Kata sandi baru minimal 8 karakter dan harus mengandung huruf serta angka' });
+      }
+      const [existing] = await pool.query('SELECT id, password FROM pengguna WHERE id = ?', [req.user.id]);
+      if (existing.length === 0) {
+        return res.status(404).json({ success: false, message: 'Pengguna tidak ditemukan' });
+      }
+      const validPassword = await bcrypt.compare(current_password, existing[0].password);
+      if (!validPassword) {
+        return res.status(400).json({ success: false, message: 'Kata sandi lama tidak sesuai' });
+      }
+    }
+
+    if (password && password.trim() !== '') {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      await pool.query('UPDATE pengguna SET nama=?, email=?, password=? WHERE id=?', [nama, email, hashedPassword, req.user.id]);
+    } else {
+      await pool.query('UPDATE pengguna SET nama=?, email=? WHERE id=?', [nama, email, req.user.id]);
+    }
+    res.json({ success: true, message: 'Profil berhasil diperbarui' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Terjadi kesalahan server' });
+  }
+};
+
+module.exports = { getAllPengguna, getPenggunaById, createPengguna, updatePengguna, deletePengguna, getProfilSaya, updateProfilSaya };

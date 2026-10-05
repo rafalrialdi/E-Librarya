@@ -77,6 +77,70 @@
     .whatsapp-help-box a:hover {
       text-decoration: underline;
     }
+
+    .profile-card-heading {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border-default);
+    }
+    .profile-heading-icon {
+      color: var(--primary);
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.28);
+      border-radius: 8px;
+      padding: 7px;
+      font-size: 20px;
+    }
+    .profile-card-heading h2 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .profile-card-heading p {
+      font-size: 11px;
+      color: var(--text-secondary);
+      line-height: 1.4;
+      margin-top: 2px;
+    }
+    .profile-identity {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 14px;
+      background: var(--bg-main);
+      border: 1px solid var(--border-default);
+      border-radius: 10px;
+    }
+    .profile-avatar-large {
+      width: 64px;
+      height: 64px;
+    }
+    .security-note {
+      display: flex;
+      gap: 10px;
+      padding: 12px;
+      border: 1px solid var(--border-default);
+      border-radius: 7px;
+      background: var(--bg-main);
+      color: var(--text-secondary);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+    .security-note .material-symbols-outlined {
+      color: var(--primary);
+      font-size: 18px;
+    }
+    .security-note strong {
+      color: var(--text-primary);
+    }
+    .profile-form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 16px;
+    }
   </style>
 </head>
 <body>
@@ -92,7 +156,14 @@
         <div class="profile-bento-grid">
           <!-- Kolom Kiri: Informasi Administrator -->
           <div class="profile-card">
-            <div style="display: flex; align-items: center; gap: 16px;">
+            <div class="profile-card-heading">
+              <span class="profile-heading-icon material-symbols-outlined">business_center</span>
+              <div>
+                <h2>Informasi Akun Administrator</h2>
+                <p>Identitas resmi staf perpustakaan madrasah</p>
+              </div>
+            </div>
+            <div class="profile-identity">
               <img src="../../../assset/iconpengguna.svg" alt="Avatar" class="profile-avatar-large">
               <div>
                 <h3 id="admin-display-nama" style="font-size: 16px; font-weight: 700; color: var(--text-primary);">Administrator</h3>
@@ -119,16 +190,18 @@
               <span style="color: var(--tertiary);">Akses Penuh (Full Administrator)</span>
             </div>
 
-            <!-- Bantuan WA PRD 20 Poin 2 -->
-            <div class="whatsapp-help-box">
-              Kendala akses atau pengelolaan sistem? <a href="https://wa.me/62895603172431" target="_blank">Hubungi Administrator</a>
-            </div>
           </div>
 
           <!-- Kolom Kanan: Keamanan & Ganti Kata Sandi -->
           <div class="profile-card">
+            <div class="profile-card-heading">
+              <span class="profile-heading-icon material-symbols-outlined">lock_reset</span>
+              <div>
+                <h2>Keamanan & Ganti Kata Sandi</h2>
+                <p>Perbarui kata sandi akun Anda secara berkala untuk menjaga keamanan sistem perpustakaan</p>
+              </div>
+            </div>
             <div>
-              <h3 style="font-size: 16px; font-weight: 700; color: var(--text-primary);">Keamanan & Ganti Kata Sandi</h3>
               <p style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">
                 Pastikan Anda menggunakan kata sandi yang kuat dan aman untuk akun Administrator perpustakaan.
               </p>
@@ -136,16 +209,33 @@
 
             <form id="form-password" onsubmit="handleGantiPassword(event)">
               <div class="form-group">
+                <label class="form-label" for="password-lama">Kata Sandi Lama <span class="req">*</span></label>
+                <div class="password-input-wrap">
+                  <input type="password" id="password-lama" class="form-control" placeholder="Masukkan kata sandi saat ini" required>
+                  <button type="button" class="password-toggle" onclick="toggleProfilePassword('password-lama', this)"><span class="material-symbols-outlined">visibility</span></button>
+                </div>
+              </div>
+              <div class="form-group">
                 <label class="form-label" for="password-baru">Kata Sandi Baru <span class="req">*</span></label>
-                <input type="password" id="password-baru" class="form-control" placeholder="Minimal 6 karakter" required>
+                <div class="password-input-wrap">
+                  <input type="password" id="password-baru" class="form-control" placeholder="Buat kata sandi baru yang kuat" required>
+                  <button type="button" class="password-toggle" onclick="toggleProfilePassword('password-baru', this)"><span class="material-symbols-outlined">visibility</span></button>
+                </div>
               </div>
 
               <div class="form-group">
                 <label class="form-label" for="password-konfirmasi">Konfirmasi Kata Sandi Baru <span class="req">*</span></label>
-                <input type="password" id="password-konfirmasi" class="form-control" placeholder="Ulangi kata sandi baru" required>
+                <div class="password-input-wrap">
+                  <input type="password" id="password-konfirmasi" class="form-control" placeholder="Ulangi kata sandi baru" required>
+                  <button type="button" class="password-toggle" onclick="toggleProfilePassword('password-konfirmasi', this)"><span class="material-symbols-outlined">visibility</span></button>
+                </div>
               </div>
 
-              <div style="display: flex; justify-content: flex-end; margin-top: 16px;">
+              <div class="security-note">
+                <span class="material-symbols-outlined">info</span>
+                <div><strong>Standar Keamanan Kredensial:</strong><br>Kata sandi minimal 8 karakter, kombinasi huruf dan angka. Hindari penggunaan tanggal lahir atau nama madrasah.</div>
+              </div>
+              <div class="profile-form-actions">
                 <button type="submit" class="btn btn-primary" id="btn-submit-pwd">
                   <span class="material-symbols-outlined">key</span>
                   <span>Simpan Kata Sandi Baru</span>

@@ -58,16 +58,16 @@
         <!-- Tabel Data -->
         <div class="table-card">
           <div class="table-responsive">
-            <table class="data-table">
+            <table class="data-table book-table">
               <thead>
                 <tr>
-                  <th style="width: 60px; text-align: center;">Cover</th>
-                  <th>Judul Buku & Penulis</th>
-                  <th>Kategori</th>
-                  <th>Mapel / Kelas</th>
+                  <th>Cover</th>
+                  <th>Informasi Buku</th>
+                  <th>ISBN</th>
+                  <th>Kategori & Kelas</th>
                   <th style="text-align: center;">Stok</th>
                   <th style="text-align: center;">E-Book</th>
-                  <th style="width: 140px; text-align: center;">Aksi</th>
+                  <th style="text-align: center;">Aksi</th>
                 </tr>
               </thead>
               <tbody id="table-body">
@@ -96,7 +96,7 @@
       </div>
       <form id="form-buku" onsubmit="handleFormSubmit(event)">
         <input type="hidden" id="buku-id">
-        <div class="modal-body">
+        <div class="modal-body book-modal-body">
           <div class="form-grid-2">
             <div class="form-group">
               <label class="form-label" for="judul">Judul Buku <span class="req">*</span></label>
@@ -140,9 +140,12 @@
               </select>
             </div>
             <div class="form-group">
-              <label class="form-label" for="id-kelas">Kategori Kelas (Opsional)</label>
-              <select id="id-kelas" class="form-control">
-                <option value="">Semua Kelas / Umum</option>
+              <label class="form-label" for="tingkat-kelas">Tingkat Kelas (Opsional)</label>
+              <select id="tingkat-kelas" class="form-control">
+                <option value="">Semua Tingkat</option>
+                <option value="VII">Kelas VII</option>
+                <option value="VIII">Kelas VIII</option>
+                <option value="IX">Kelas IX</option>
               </select>
             </div>
           </div>

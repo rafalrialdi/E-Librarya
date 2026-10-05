@@ -136,6 +136,12 @@ function renderAllSections(data) {
   }
 }
 
+function scrollCards(containerId, direction) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.scrollBy({ left: direction * 340, behavior: 'smooth' });
+}
+
 async function updateStatus(id, newStatus) {
   const res = await fetchAPI(`/peminjaman/${id}/status`, {
     method: 'PUT',
@@ -148,7 +154,7 @@ async function updateStatus(id, newStatus) {
     if (newStatus === 'dikembalikan') msg = 'Buku berhasil dikembalikan dan stok diperbarui';
 
     showToast(msg);
-    loadPeminjaman();
+    await loadPeminjaman();
   } else {
     showToast(res ? res.message : 'Gagal memperbarui status', 'error');
   }
