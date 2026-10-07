@@ -8,15 +8,39 @@ const uploadToSupabase = async (file, folder) => {
   const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${ext}`;
   const path = `perpustakaan/${folder}/${fileName}`;
 
-  const { error } = await supabase.storage.from(BUCKET).upload(path, file.buffer, {
-    contentType: file.mimetype,
-    upsert: false
-  });
+  try {
+    const { error, data } = await supabase.storage.from(BUCKET).upload(path, file.buffer, {
+      contentType: file.mimetype,
+      upsert: false
+    });
 
-  if (error) throw new Error(error.message);
+    if (error) {
+      console.error('Supabase upload error:', JSON.stringify(error, null, 2));
+      
+      // Provide more specific error messages
+      if (error.message?.includes('bucket not found') || error.message?.includes('Bucket not found')) {
+        throw new Error(`Bucket storage '${BUCKET}' tidak ditemukan. Pastikan bucket sudah dibuat di Supabase Dashboard.`);
+      }
+      if (error.message?.includes('not authorized') || error.message?.includes('Unauthorized')) {
+        throw new Error('Autentikasi Supabase gagal. Periksa SUPABASE_SERVICE_KEY di environment variables.');
+      }
+      if (error.message?.includes('fetch failed') || error.message?.includes('ECONNREFUSED')) {
+        throw new Error('Tidak dapat terhubung ke Supabase Storage. Periksa koneksi internet dan SUPABASE_URL.');
+      }
+      throw new Error(`Upload gagal: ${error.message}`);
+    }
 
-  const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
-  return { url: data.publicUrl, path };
+    const { data: publicUrlData } = supabase.storage.from(BUCKET).getPublicUrl(path);
+    
+    if (!publicUrlData?.publicUrl) {
+      throw new Error('Gagal mendapatkan URL publik file');
+    }
+
+    return { url: publicUrlData.publicUrl, path };
+  } catch (err) {
+    console.error('Upload error:', err.message);
+    throw err;
+  }
 };
 
 const deleteFromSupabase = async (path) => {
@@ -99,7 +123,7 @@ const createBuku = async (req, res) => {
     res.status(201).json({ success: true, message: 'Buku berhasil ditambahkan', data: { id: result.insertId } });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ success: false, message: 'Terjadi kesalahan server' });
+    res.status(500).json({ success: false, message: err.message || 'Terjadi kesalahan server' });
   }
 };
 

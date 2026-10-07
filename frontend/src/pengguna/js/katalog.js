@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderFooter();
   await loadFilters();
   await loadBooks();
+  await fetchAndRenderNotifications();
   
   document.getElementById('search-input').addEventListener('input', debounce(applyFilters, 300));
   document.getElementById('filter-kategori').addEventListener('change', applyFilters);
@@ -46,7 +47,7 @@ async function loadBooks() {
     applyFilters();
   } else {
     document.getElementById('catalog-grid').innerHTML = `
-      <div class="empty-state">
+      <div class="empty-state" style="grid-column: 1 / -1;">
         <span class="material-symbols-outlined">error</span>
         <h3>Gagal memuat katalog</h3>
         <p>Terjadi kesalahan saat memuat data buku</p>
@@ -64,11 +65,11 @@ function applyFilters() {
   
   filteredBooks = allBooks.filter(book => {
     const matchKeyword = !keyword || 
-      book.judul.toLowerCase().includes(keyword) ||
+      (book.judul && book.judul.toLowerCase().includes(keyword)) ||
       (book.penulis && book.penulis.toLowerCase().includes(keyword));
     
-    const matchKategori = !kategoriId || String(book.id_kategori) === String(kategoriId);
-    const matchMapel = !mapelId || String(book.id_mata_pelajaran) === String(mapelId);
+    const matchKategori = !kategoriId || String(book.id_kategori || '') === String(kategoriId);
+    const matchMapel = !mapelId || String(book.id_mata_pelajaran || '') === String(mapelId);
     const matchKelas = !kelas || book.tingkat_kelas === kelas;
     
     return matchKeyword && matchKategori && matchMapel && matchKelas;
@@ -77,13 +78,13 @@ function applyFilters() {
   filteredBooks.sort((a, b) => {
     switch(sort) {
       case 'title-desc':
-        return b.judul.localeCompare(a.judul);
+        return (b.judul || '').localeCompare(a.judul || '');
       case 'year-newest':
         return (b.tahun_terbit || 0) - (a.tahun_terbit || 0);
       case 'year-oldest':
         return (a.tahun_terbit || 0) - (b.tahun_terbit || 0);
       default:
-        return a.judul.localeCompare(b.judul);
+        return (a.judul || '').localeCompare(b.judul || '');
     }
   });
   
@@ -110,26 +111,32 @@ function renderBooks() {
     return;
   }
   
-  grid.innerHTML = booksToShow.map(book => `
-    <div class="book-card">
-      <a href="detail.html?id=${book.id}&from=katalog" class="book-cover">
-        <img src="${coverUrl(book.cover_url)}" alt="${book.judul}">
-      </a>
-      <div class="book-category">${book.nama_kategori || 'Umum'}</div>
-      <h3 class="book-title">${book.judul}</h3>
-      <div class="book-meta">${book.penerbit || 'Penerbit tidak tercantum'} • ${book.tahun_terbit || '-'}</div>
-      <div class="book-actions">
-        <button class="btn btn-read" onclick="readBook(${book.id}, '${book.pdf_url || ''}')">
-          <span class="material-symbols-outlined">menu_book</span>
-          <span>Baca Buku</span>
-        </button>
-        <button class="btn btn-download" onclick="downloadBook(${book.id}, '${String(book.judul).replace(/'/g, "\\'")}', '${book.pdf_url || ''}')">
-          <span class="material-symbols-outlined">download</span>
-          <span>Download Buku</span>
-        </button>
+  grid.innerHTML = booksToShow.map(book => {
+    const coverHtml = book.cover_url 
+      ? `<img src="${book.cover_url}" alt="${book.judul}">` 
+      : `<div style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; background: #1e293b; color: #334155;"><span class="material-symbols-outlined" style="font-size: 48px;">menu_book</span></div>`;
+    
+    return `
+      <div class="book-card">
+        <a href="detail.html?id=${book.id}&from=katalog" class="book-cover">
+          ${coverHtml}
+        </a>
+        <div class="book-category">${book.nama_kategori || 'Umum'}</div>
+        <h3 class="book-title">${book.judul}</h3>
+        <div class="book-meta">${book.penerbit || 'Penerbit tidak tercantum'} • ${book.tahun_terbit || '-'}</div>
+        <div class="book-actions">
+          <button class="btn btn-read" onclick="readBook(${book.id}, '${book.pdf_url || ''}')">
+            <span class="material-symbols-outlined">menu_book</span>
+            <span>Baca Buku</span>
+          </button>
+          <button class="btn btn-download" onclick="downloadBook(${book.id}, '${String(book.judul).replace(/'/g, "\\'")}', '${book.pdf_url || ''}')">
+            <span class="material-symbols-outlined">download</span>
+            <span>Download Buku</span>
+          </button>
+        </div>
       </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
   
   renderPagination();
 }

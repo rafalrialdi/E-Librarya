@@ -9,11 +9,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
   const data = res.data || {};
-  renderLoanNotifications(data.peminjaman_saya || []);
+  await fetchAndRenderNotifications();
   const latestBooks = catalog?.success ? catalog.data.slice(0, 12) : (data.buku_terbaru || []);
   document.getElementById('latest-books').innerHTML = latestBooks.length ? latestBooks.map(stitchBookCard).join('') : '<div class="empty-state"><span class="material-symbols-outlined">menu_book</span><p>Belum ada koleksi terbaru.</p></div>';
   document.getElementById('reading-history').innerHTML = data.riwayat_baca?.length ? data.riwayat_baca.slice(0, 5).map(stitchHistoryCard).join('') : '<div class="empty-state"><span class="material-symbols-outlined">history</span><p>Riwayat baca masih kosong.</p></div>';
-  document.getElementById('recent-loans').innerHTML = data.peminjaman_saya?.length ? data.peminjaman_saya.slice(0, 5).map(stitchLoanCard).join('') : '<div class="empty-state"><span class="material-symbols-outlined">assignment</span><p>Belum ada aktivitas peminjaman.</p></div>';
+  const aktifLoans = (data.peminjaman_saya || []).filter(l => l.status === 'disetujui').slice(0, 5);
+  document.getElementById('recent-loans').innerHTML = aktifLoans.length ? aktifLoans.map(stitchLoanCard).join('') : '<div class="empty-state"><span class="material-symbols-outlined">book</span><p>Tidak ada buku yang sedang dipinjam</p></div>';
 });
 
 function stitchBookCard(book) {

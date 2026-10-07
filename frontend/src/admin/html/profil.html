@@ -141,6 +141,42 @@
       gap: 10px;
       margin-top: 16px;
     }
+    
+    .password-requirements {
+      background: var(--bg-main);
+      border: 1px solid var(--border-default);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+    .password-requirements-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .requirements-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .requirement-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    .requirement-item .material-symbols-outlined {
+      font-size: 18px;
+    }
+    .requirement-item.valid {
+      color: var(--tertiary);
+    }
+    .requirement-item.valid .material-symbols-outlined {
+      color: var(--tertiary);
+    }
   </style>
 </head>
 <body>
@@ -228,6 +264,24 @@
                 <div class="password-input-wrap">
                   <input type="password" id="password-konfirmasi" class="form-control" placeholder="Ulangi kata sandi baru" required>
                   <button type="button" class="password-toggle" onclick="toggleProfilePassword('password-konfirmasi', this)"><span class="material-symbols-outlined">visibility</span></button>
+                </div>
+              </div>
+
+              <div class="password-requirements">
+                <div class="password-requirements-title">Persyaratan Kata Sandi:</div>
+                <div class="requirements-grid">
+                  <div class="requirement-item" id="req-length">
+                    <span class="material-symbols-outlined">check_circle</span>
+                    <span>Minimal 8 karakter</span>
+                  </div>
+                  <div class="requirement-item" id="req-combo">
+                    <span class="material-symbols-outlined">check_circle</span>
+                    <span>Kombinasi huruf dan angka</span>
+                  </div>
+                  <div class="requirement-item" id="req-match">
+                    <span class="material-symbols-outlined">check_circle</span>
+                    <span>Konfirmasi kata sandi cocok</span>
+                  </div>
                 </div>
               </div>
 

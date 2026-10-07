@@ -77,6 +77,24 @@ function setLoading(btnId, loading) {
   }
 }
 
+// Clear cache on new login session
+function clearLoginCache() {
+  const allResources = ['dashboard', 'buku', 'pengguna', 'kategori-buku', 'mata-pelajaran', 'kategori-kelas', 'peminjaman', 'profil', 'riwayat-baca'];
+  allResources.forEach(r => {
+    localStorage.removeItem(`cache_ver_${r}`);
+    localStorage.removeItem(`cache_ts_${r}`);
+  });
+  localStorage.removeItem('cache_ver_global');
+  localStorage.removeItem('cache_ts_global');
+  
+  // Clear old notification localStorage keys
+  Object.keys(localStorage).forEach(key => {
+    if (key.startsWith('notif_')) {
+      localStorage.removeItem(key);
+    }
+  });
+}
+
 // --- Login Guru/Siswa ---
 async function handleLoginPengguna(e) {
   e.preventDefault();
@@ -115,6 +133,9 @@ async function handleLoginPengguna(e) {
       resetBtnPengguna();
       return;
     }
+
+    // Clear cache before new session
+    clearLoginCache();
 
     // Simpan token & data user
     localStorage.setItem('token', data.data.token);
@@ -178,6 +199,9 @@ async function handleLoginAdmin(e) {
       resetBtnAdmin();
       return;
     }
+
+    // Clear cache before new session
+    clearLoginCache();
 
     // Simpan token & data user
     localStorage.setItem('token', data.data.token);

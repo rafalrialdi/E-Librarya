@@ -24,9 +24,11 @@
     .main { max-width: 1280px; margin: 0 auto; padding: 40px 32px 60px; }
     
     .profile-trigger:hover + .user-menu, .user-menu:hover, .user-menu.open { display: block; }
-    .nav-user:has(.icon-button:hover) .notification-popover, .notification-popover:hover, .notification-popover.open { display: block; }
-    .profile-menu a, .profile-menu button { font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 500; }
+    .icon-button[data-has-notifications="true"]:hover ~ .notification-popover, .notification-popover:hover, .notification-popover.open { display: block; }
+    .profile-menu a, .profile-menu button { font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 500; transition: all .2s ease; }
+    .profile-menu a:hover { background: #1e293b; color: #f8fafc; }
     .profile-menu button { font-weight: 600; }
+    .profile-menu button:hover { background: rgba(239, 68, 68, .15); color: #fca5a5; }
     
     input[type="search"], input[type="text"], select { font-family: 'Poppins', sans-serif; font-weight: 400; }
     input::placeholder { font-family: 'Poppins', sans-serif; font-weight: 300; font-size: 14px; }
@@ -62,8 +64,8 @@
     .book-cover { width: 100%; aspect-ratio: 3 / 4; border-radius: 8px; overflow: hidden; margin-bottom: 12px; background: #0d1726; }
     .book-cover img { width: 100%; height: 100%; object-fit: cover; }
     
-    .book-category { font-size: 11px; color: #64748b; margin-bottom: 6px; }
-    .book-title { font-size: 15px; font-weight: 600; color: #f8fafc; margin-bottom: 4px; line-height: 1.3; min-height: 40px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .book-category { font-size: 11px; color: #64748b; margin-bottom: 4px; }
+    .book-title { font-size: 15px; font-weight: 600; color: #f8fafc; margin-bottom: 2px; line-height: 1.3; min-height: 40px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
     .book-meta { font-size: 12px; color: #64748b; margin-bottom: 12px; }
     
     .book-actions { display: flex; flex-direction: column; gap: 8px; margin-top: auto; }
@@ -92,6 +94,10 @@
     @media (max-width: 768px) {
       .filter-grid { grid-template-columns: repeat(2, 1fr); }
       .catalog-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
   </style>
 </head>
@@ -158,7 +164,12 @@
       </div>
     </div>
 
-    <div id="catalog-grid" class="catalog-grid"></div>
+    <div id="catalog-grid" class="catalog-grid">
+      <div class="empty-state" style="grid-column: 1 / -1; padding: 40px 20px;">
+        <span class="material-symbols-outlined" style="font-size: 48px; color: #f59e0b; animation: spin 1s linear infinite;">progress_activity</span>
+        <p style="margin-top: 12px; color: #94a3b8;">Memuat katalog buku...</p>
+      </div>
+    </div>
 
     <div class="pagination" id="pagination"></div>
   </main>

@@ -23,9 +23,15 @@ function getResourceKey(endpoint) {
 
 function getCacheVersion(resourceKey) {
   try {
-    return localStorage.getItem(`cache_ver_${resourceKey}`) || localStorage.getItem('cache_ver_global') || 'v1';
+    const version = localStorage.getItem(`cache_ver_${resourceKey}`) || localStorage.getItem('cache_ver_global');
+    if (version) return version;
+    // Generate fresh timestamp instead of static 'v1' to avoid stale browser cache
+    const newVer = Date.now().toString();
+    localStorage.setItem('cache_ver_global', newVer);
+    localStorage.setItem(`cache_ver_${resourceKey}`, newVer);
+    return newVer;
   } catch (e) {
-    return 'v1';
+    return Date.now().toString();
   }
 }
 
@@ -207,7 +213,19 @@ function openLogoutModal(e) {
   openModal('modal-logout');
 }
 
+// Clear cache on logout or new session
+function clearAdminCache() {
+  const allResources = ['dashboard', 'buku', 'pengguna', 'kategori-buku', 'mata-pelajaran', 'kategori-kelas', 'peminjaman', 'profil', 'riwayat-baca'];
+  allResources.forEach(r => {
+    localStorage.removeItem(`cache_ver_${r}`);
+    localStorage.removeItem(`cache_ts_${r}`);
+  });
+  localStorage.removeItem('cache_ver_global');
+  localStorage.removeItem('cache_ts_global');
+}
+
 function confirmLogout() {
+  clearAdminCache();
   localStorage.clear();
   window.location.href = '../../login/html/login (1).html';
 }

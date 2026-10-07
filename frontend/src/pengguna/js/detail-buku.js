@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
   
   await loadBookDetail(bookId);
+  await fetchAndRenderNotifications();
 });
 
 async function loadBookDetail(id) {
@@ -45,8 +46,17 @@ async function loadBookDetail(id) {
 function renderBookDetail(book) {
   document.title = `${book.judul} — E-Library MTs Al-Falah Klender`;
   
-  document.getElementById('book-cover').src = coverUrl(book.cover_url);
-  document.getElementById('book-cover').alt = `Sampul ${book.judul}`;
+  const coverImg = document.getElementById('book-cover');
+  const skeleton = document.getElementById('cover-skeleton');
+  
+  if (book.cover_url) {
+    coverImg.src = book.cover_url;
+    coverImg.alt = `Sampul ${book.judul}`;
+  } else {
+    coverImg.style.display = 'none';
+    skeleton.innerHTML = '<span class="material-symbols-outlined" style="font-size: 64px; color: #334155;">menu_book</span>';
+    skeleton.style.display = 'flex';
+  }
   
   const badges = [];
   if (book.nama_kategori) {

@@ -24,9 +24,11 @@
     .main { max-width: 1280px; margin: 0 auto; padding: 32px; }
     
     .profile-trigger:hover + .user-menu, .user-menu:hover, .user-menu.open { display: block; }
-    .nav-user:has(.icon-button:hover) .notification-popover, .notification-popover:hover, .notification-popover.open { display: block; }
-    .profile-menu a, .profile-menu button { font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 500; }
+    .icon-button[data-has-notifications="true"]:hover ~ .notification-popover, .notification-popover:hover, .notification-popover.open { display: block; }
+    .profile-menu a, .profile-menu button { font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 500; transition: all .2s ease; }
+    .profile-menu a:hover { background: #1e293b; color: #f8fafc; }
     .profile-menu button { font-weight: 600; }
+    .profile-menu button:hover { background: rgba(239, 68, 68, .15); color: #fca5a5; }
     
     input[type="search"], input[type="text"], input[type="email"], input[type="password"], select, textarea { font-family: 'Poppins', sans-serif; font-weight: 400; letter-spacing: 0.01em; }
     input::placeholder, textarea::placeholder { font-family: 'Poppins', sans-serif; font-weight: 300; font-size: 14px; letter-spacing: 0.02em; }
@@ -39,8 +41,9 @@
     
     .detail-left { background: #1a232e; border: 1px solid #2d3f52; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; }
     
-    .detail-cover-wrapper { width: 100%; aspect-ratio: 3 / 4; border-radius: 10px; overflow: hidden; background: #0d1726; margin-bottom: 12px; box-shadow: 0 8px 24px rgba(0,0,0,.4); }
+    .detail-cover-wrapper { width: 100%; aspect-ratio: 3 / 4; border-radius: 10px; overflow: hidden; background: #0d1726; margin-bottom: 12px; box-shadow: 0 8px 24px rgba(0,0,0,.4); position: relative; }
     .detail-cover-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+    .cover-skeleton { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; background: #1e293b; color: #334155; }
     
     .detail-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
     .detail-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 600; }
@@ -107,8 +110,11 @@
 
     <div class="detail-container">
       <div class="detail-left">
-        <div class="detail-cover-wrapper">
-          <img id="book-cover" src="../../../assset/logosekolah.jpeg" alt="Cover Buku">
+        <div class="detail-cover-wrapper" id="cover-wrapper">
+          <div class="cover-skeleton" id="cover-skeleton">
+            <span class="material-symbols-outlined" style="font-size: 64px; color: #334155;">menu_book</span>
+          </div>
+          <img id="book-cover" alt="Cover Buku" style="display: none;" onload="this.style.display='block'; document.getElementById('cover-skeleton').style.display='none';">
         </div>
         
         <div class="detail-badges" id="book-badges"></div>

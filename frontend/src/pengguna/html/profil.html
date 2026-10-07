@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profil & Ganti Password — E-Library MTs Al-Falah Klender</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  <link rel="stylesheet" href="../css/user.css">
+  <style>
+    html { overflow-y: scroll; }
+    body { min-height: 100vh; }
+    html::-webkit-scrollbar { width: 12px; }
+    html::-webkit-scrollbar-track { background: #0a1929; }
+    html::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 6px; border: 2px solid #0a1929; }
+    html::-webkit-scrollbar-thumb:hover { background: #2d3f52; }
+    html { scrollbar-width: thin; scrollbar-color: #1e293b #0a1929; }
+    
+    .user-nav { padding: 0 32px; position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #131b26; }
+    .nav-inner { max-width: 1280px; margin: 0 auto; }
+    body { padding-top: 64px; }
+    .main { max-width: 1280px; margin: 0 auto; padding: 40px 32px; }
+    
+    .profile-trigger:hover + .user-menu, .user-menu:hover, .user-menu.open { display: block; }
+    .icon-button[data-has-notifications="true"]:hover ~ .notification-popover, .notification-popover:hover, .notification-popover.open { display: block; }
+    .profile-menu a, .profile-menu button { font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 500; transition: all .2s ease; }
+    .profile-menu a:hover { background: #1e293b; color: #f8fafc; }
+    .profile-menu button { font-weight: 600; }
+    .profile-menu button:hover { background: rgba(239, 68, 68, .15); color: #fca5a5; }
+    
+    input[type="password"], input[type="text"] { font-family: 'Poppins', sans-serif; font-weight: 400; }
+    
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+    .page-header h1 { font-size: 32px; font-weight: 700; color: #f8fafc; }
+    .page-header p { color: #94a3b8; font-size: 14px; margin-top: 6px; }
+    .badge-verified { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: rgba(245, 158, 11, .15); border: 1px solid rgba(245, 158, 11, .3); border-radius: 8px; color: #fbbf24; font-size: 13px; font-weight: 600; }
+    
+    .profile-grid { display: grid; grid-template-columns: 540px 1fr; gap: 24px; }
+    
+    .profile-card { background: #1a232e; border: 1px solid #2d3f52; border-radius: 16px; padding: 32px; }
+    
+    .profile-avatar { width: 120px; height: 120px; margin: 0 auto 20px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); display: flex; align-items: center; justify-content: center; border: 3px solid #2d3f52; }
+    .profile-avatar .material-symbols-outlined { font-size: 64px; color: #051424; }
+    
+    .profile-name { text-align: center; font-size: 22px; font-weight: 700; color: #f8fafc; margin-bottom: 12px; }
+    
+    .profile-badges { display: flex; justify-content: center; gap: 8px; margin-bottom: 32px; flex-wrap: wrap; }
+    .badge-role { padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+    .badge-guru { background: rgba(34, 197, 94, .15); color: #22c55e; border: 1px solid rgba(34, 197, 94, .3); }
+    .badge-siswa { background: rgba(59, 130, 246, .15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, .3); }
+    .badge-admin { background: rgba(245, 158, 11, .15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, .3); }
+    .badge-active { background: rgba(34, 197, 94, .15); color: #22c55e; border: 1px solid rgba(34, 197, 94, .3); padding: 4px 12px; font-size: 11px; }
+    
+    .badge-verified { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: rgba(245, 158, 11, .15); border: 1px solid rgba(245, 158, 11, .3); border-radius: 8px; color: #fbbf24; font-size: 13px; font-weight: 600; }
+    .badge-verified .material-symbols-outlined { font-size: 18px; color: #fbbf24; }
+    
+    .profile-field { margin-bottom: 20px; }
+    .profile-field-label { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase; margin-bottom: 8px; }
+    .profile-field-label .material-symbols-outlined { font-size: 16px; }
+    .profile-field-value { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #0d1726; border: 1px solid #2d3f52; border-radius: 8px; color: #cbd5e1; font-size: 14px; }
+    .profile-field-value .material-symbols-outlined { color: #64748b; font-size: 18px; }
+    
+    .profile-notice { display: flex; gap: 12px; padding: 16px; background: rgba(245, 158, 11, .1); border: 1px solid rgba(245, 158, 11, .2); border-radius: 10px; margin-top: 24px; }
+    .profile-notice .material-symbols-outlined { color: #fbbf24; font-size: 20px; flex-shrink: 0; }
+    .profile-notice-content { font-size: 12px; color: #cbd5e1; line-height: 1.6; }
+    .profile-notice a { color: #fbbf24; text-decoration: none; font-weight: 600; }
+    .profile-notice a:hover { text-decoration: underline; }
+    
+    .password-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .password-card-header h2 { font-size: 18px; font-weight: 700; color: #f8fafc; display: flex; align-items: center; gap: 8px; }
+    .password-card-header .material-symbols-outlined { font-size: 22px; color: #f59e0b; }
+    .badge-ssl { padding: 6px 12px; background: rgba(34, 197, 94, .15); border: 1px solid rgba(34, 197, 94, .3); border-radius: 6px; color: #22c55e; font-size: 11px; font-weight: 600; }
+    
+    .form-group { margin-bottom: 20px; }
+    .form-label { display: block; font-size: 13px; font-weight: 600; color: #cbd5e1; margin-bottom: 8px; }
+    .form-label .required { color: #ef4444; }
+    
+    .input-wrapper { position: relative; }
+    .input-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #64748b; font-size: 20px; }
+    .form-input { width: 100%; height: 48px; padding: 0 48px 0 44px; background: #0d1726; border: 1px solid #2d3f52; border-radius: 10px; color: #f8fafc; font-size: 14px; }
+    .form-input:focus { outline: none; border-color: #f59e0b; box-shadow: 0 0 0 3px rgba(245, 158, 11, .1); }
+    .toggle-password { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: #64748b; font-size: 20px; cursor: pointer; transition: color .2s; }
+    .toggle-password:hover { color: #cbd5e1; }
+    
+    .password-requirements { background: rgba(30, 41, 59, .4); border: 1px solid #2d3f52; border-radius: 10px; padding: 16px; margin-bottom: 24px; }
+    .password-requirements-title { font-size: 12px; font-weight: 600; color: #94a3b8; text-transform: uppercase; margin-bottom: 12px; }
+    .requirements-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .requirement-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #64748b; }
+    .requirement-item .material-symbols-outlined { font-size: 18px; }
+    .requirement-item.valid { color: #22c55e; }
+    .requirement-item.valid .material-symbols-outlined { color: #22c55e; }
+    
+    .form-actions { display: flex; gap: 12px; }
+    .btn-submit { flex: 1; height: 48px; background: #f59e0b; color: #051424; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all .2s; }
+    .btn-submit:hover { background: #d97706; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(245, 158, 11, .3); }
+    .btn-cancel { height: 48px; padding: 0 24px; background: transparent; border: 1px solid #334155; border-radius: 10px; color: #94a3b8; font-size: 14px; font-weight: 600; cursor: pointer; transition: all .2s; }
+    .btn-cancel:hover { background: #1e293b; border-color: #475569; color: #cbd5e1; }
+    
+    @media (max-width: 1024px) {
+      .profile-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header id="user-nav" class="user-nav"></header>
+
+  <main class="main">
+    <div class="page-header">
+      <div>
+        <h1>Profil & Ganti Password</h1>
+        <p>Kelola informasi kredensial dan kata sandi akun E-Library MTs Al-Falah Klender Anda.</p>
+      </div>
+      <div class="badge-verified">
+        <span class="material-symbols-outlined">verified</span>
+        <span>Akun Terverifikasi MTs Al-Falah Klender</span>
+      </div>
+    </div>
+
+    <div class="profile-grid">
+      <div class="profile-card">
+        <div class="profile-avatar">
+          <span class="material-symbols-outlined">person</span>
+        </div>
+        
+        <div class="profile-name" id="profile-name">Memuat...</div>
+        
+        <div class="profile-badges" id="profile-badges"></div>
+        
+        <div class="profile-field">
+          <div class="profile-field-label">
+            <span class="material-symbols-outlined">badge</span>
+            <span id="nip-label">Nomor Induk Pegawai (NIP)</span>
+          </div>
+          <div class="profile-field-value">
+            <span id="profile-nip">-</span>
+            <span class="material-symbols-outlined">lock</span>
+          </div>
+        </div>
+        
+        <div class="profile-field">
+          <div class="profile-field-label">
+            <span class="material-symbols-outlined">email</span>
+            <span>Email MTs Al-Falah Klender</span>
+          </div>
+          <div class="profile-field-value">
+            <span id="profile-email">-</span>
+            <span class="material-symbols-outlined">lock</span>
+          </div>
+        </div>
+        
+        <div class="profile-field">
+          <div class="profile-field-label">
+            <span class="material-symbols-outlined">calendar_month</span>
+            <span>Tahun Ajaran</span>
+          </div>
+          <div class="profile-field-value">
+            <span id="profile-tahun">2025/2026</span>
+            <span class="material-symbols-outlined">lock</span>
+          </div>
+        </div>
+        
+        <div class="profile-notice">
+          <span class="material-symbols-outlined">info</span>
+          <div class="profile-notice-content">
+            Sesuai kebijakan MTs Al-Falah Klender, perubahan data identitas (Nama, NIP/NIS, Email) hanya dapat dilakukan melalui Administrator Perpustakaan.
+            <br><a href="#">Hubungi Administrator →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-card">
+        <div class="password-card-header">
+          <h2>
+            <span class="material-symbols-outlined" style="color: #f59e0b; font-size: 22px;">security</span>
+            <span>Keamanan Akun & Ganti Kata Sandi</span>
+          </h2>
+          <div class="badge-ssl">Enkripsi SSL 256-bit</div>
+        </div>
+        
+        <form id="form-password" onsubmit="handlePasswordChange(event)">
+          <div class="form-group">
+            <label class="form-label">Kata Sandi Saat Ini <span class="required">*</span></label>
+            <div class="input-wrapper">
+              <span class="material-symbols-outlined input-icon">key</span>
+              <input type="password" id="current-password" class="form-input" placeholder="Masukkan kata sandi saat ini" required>
+              <span class="material-symbols-outlined toggle-password" onclick="togglePasswordVisibility('current-password', this)">visibility</span>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Kata Sandi Baru <span class="required">*</span></label>
+            <div class="input-wrapper">
+              <span class="material-symbols-outlined input-icon">lock</span>
+              <input type="password" id="new-password" class="form-input" placeholder="Masukkan kata sandi baru (minimal 8 karakter)" required>
+              <span class="material-symbols-outlined toggle-password" onclick="togglePasswordVisibility('new-password', this)">visibility</span>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Konfirmasi Kata Sandi Baru <span class="required">*</span></label>
+            <div class="input-wrapper">
+              <span class="material-symbols-outlined input-icon">repeat</span>
+              <input type="password" id="confirm-password" class="form-input" placeholder="Ulangi kata sandi baru" required>
+              <span class="material-symbols-outlined toggle-password" onclick="togglePasswordVisibility('confirm-password', this)">visibility</span>
+            </div>
+          </div>
+          
+          <div class="password-requirements">
+            <div class="password-requirements-title">Persyaratan Kata Sandi:</div>
+            <div class="requirements-grid">
+              <div class="requirement-item" id="req-length">
+                <span class="material-symbols-outlined">check_circle</span>
+                <span>Minimal 8 karakter</span>
+              </div>
+              <div class="requirement-item" id="req-combo">
+                <span class="material-symbols-outlined">check_circle</span>
+                <span>Kombinasi huruf dan angka</span>
+              </div>
+              <div class="requirement-item" id="req-match">
+                <span class="material-symbols-outlined">check_circle</span>
+                <span>Konfirmasi kata sandi cocok</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-actions">
+            <button type="submit" class="btn-submit" id="btn-submit">
+              <span class="material-symbols-outlined">save</span>
+              <span>Simpan Perubahan Kata Sandi</span>
+            </button>
+            <button type="button" class="btn-cancel" onclick="resetForm()">Batal</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <div id="user-toast"></div>
+
+  <script src="../js/user-common.js"></script>
+  <script src="../js/profil.js"></script>
+</body>
+</html>

@@ -100,15 +100,16 @@ const updateStatusPeminjaman = async (req, res) => {
     if (existing.length === 0) return res.status(404).json({ success: false, message: 'Peminjaman tidak ditemukan' });
 
     const peminjaman = existing[0];
+    const oldStatus = peminjaman.status;
 
     // Update stok buku
-    if (status === 'disetujui' && peminjaman.status === 'menunggu') {
+    if (status === 'disetujui' && oldStatus === 'menunggu') {
       await pool.query('UPDATE buku SET stok_tersedia = stok_tersedia - 1 WHERE id = ?', [peminjaman.id_buku]);
     }
-    if (status === 'dikembalikan' && peminjaman.status === 'disetujui') {
+    if (status === 'dikembalikan' && oldStatus === 'disetujui') {
       await pool.query('UPDATE buku SET stok_tersedia = stok_tersedia + 1 WHERE id = ?', [peminjaman.id_buku]);
     }
-    if (status === 'ditolak' && peminjaman.status === 'menunggu') {
+    if (status === 'ditolak' && oldStatus === 'menunggu') {
       // Stok tidak berubah karena belum disetujui
     }
 
@@ -119,7 +120,34 @@ const updateStatusPeminjaman = async (req, res) => {
       [status, catatan_admin || null, tgl_kembali, id]
     );
 
-    res.json({ success: true, message: `Status peminjaman berhasil diupdate ke ${status}` });
+    // Insert notifikasi jika status berubah ke disetujui atau ditolak (dari menunggu)
+    if ((status === 'disetujui' || status === 'ditolak') && oldStatus === 'menunggu') {
+      const [bukuData] = await pool.query('SELECT judul FROM buku WHERE id = ?', [peminjaman.id_buku]);
+      const judulBuku = bukuData.length > 0 ? bukuData[0].judul : 'Buku';
+      
+      await pool.query(
+        `INSERT INTO notifikasi (id_peminjaman, id_pengguna, judul_buku, status, catatan_admin)
+         VALUES (?, ?, ?, ?, ?)`,
+        [id, peminjaman.id_pengguna, judulBuku, status, catatan_admin || null]
+      );
+    }
+
+    // Return data for notification trigger
+    const [bukuData] = await pool.query('SELECT judul FROM buku WHERE id = ?', [peminjaman.id_buku]);
+    const judulBuku = bukuData.length > 0 ? bukuData[0].judul : 'Buku';
+
+    res.json({ 
+      success: true, 
+      message: `Status peminjaman berhasil diupdate ke ${status}`,
+      data: {
+        id_peminjaman: id,
+        id_pengguna: peminjaman.id_pengguna,
+        judul_buku: judulBuku,
+        status: status,
+        catatan_admin: catatan_admin || null,
+        old_status: oldStatus
+      }
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: 'Terjadi kesalahan server' });
